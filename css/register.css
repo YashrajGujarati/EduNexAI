@@ -1,0 +1,92 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#0d6efd,#6610f2);
+    min-height:100vh;
+}
+
+.register-card{
+    background:#ffffff;
+    padding:40px;
+    border-radius:20px;
+    box-shadow:0px 15px 35px rgba(0,0,0,0.2);
+    transition:.3s;
+}
+
+.register-card:hover{
+    transform:translateY(-5px);
+}
+
+.register-icon{
+    font-size:70px;
+    color:#0d6efd;
+    margin-bottom:15px;
+}
+
+.register-card h2{
+    font-weight:bold;
+    color:#0d6efd;
+}
+
+.register-card p{
+    color:#666;
+}
+
+.form-label{
+    font-weight:600;
+}
+
+.form-control,
+.form-select{
+    height:50px;
+    border-radius:10px;
+}
+
+.form-control:focus,
+.form-select:focus{
+    border-color:#0d6efd;
+    box-shadow:0 0 8px rgba(13,110,253,.3);
+}
+
+.btn-primary{
+    height:50px;
+    font-size:18px;
+    border-radius:10px;
+    transition:.3s;
+}
+
+.btn-primary:hover{
+    transform:scale(1.02);
+}
+
+a{
+    text-decoration:none;
+}
+
+a:hover{
+    text-decoration:underline;
+}
+
+hr{
+    margin:25px 0;
+}
+
+@media(max-width:768px){
+.register-card{
+padding:25px;
+}
+
+.register-icon{
+font-size:55px;
+}
+
+.register-card h2{
+font-size:28px;
+}
+
+}

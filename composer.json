@@ -1,0 +1,17 @@
+{
+    "name": "yashraj/edu-nex-ai",
+    "authors": [
+        {
+            "name": "Yashraj Gujarati",
+            "email": "yashrajgujarati25@gmail.com"
+        }
+    ],
+    "require": {
+        "phpoffice/phpspreadsheet": "2.1"
+    },
+    "config": {
+        "audit": {
+            "block-insecure": false
+        }
+    }
+}
