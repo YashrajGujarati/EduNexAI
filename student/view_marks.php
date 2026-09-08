@@ -55,6 +55,11 @@ rel="stylesheet">
 </head>
 
 <body>
+    <?php include("sidebar.php"); ?>
+
+<div class="main-content">
+
+    <?php include("header.php"); ?>
 
 <div class="container mt-5">
 
@@ -101,6 +106,7 @@ while($row = mysqli_fetch_assoc($marksQuery))
 
 </table>
 
+</div>
 </div>
 
 </body>

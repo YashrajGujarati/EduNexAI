@@ -1,93 +1,103 @@
-<?php
+    <?php
 
-session_start();
+    session_start();
 
-if (!isset($_SESSION['user_id']))
-{
-    header("Location: ../login.php");
-    exit();
-}
+    if (!isset($_SESSION['user_id']))
+    {
+        header("Location: ../login.php");
+        exit();
+    }
 
-include("../config/db.php");
+    include("../config/db.php");
 
-$user_id = $_SESSION['user_id'];
+    $user_id = $_SESSION['user_id'];
 
-$getStudent = mysqli_query($conn,
+    $getStudent = mysqli_query($conn,
 
-"SELECT student_id
-FROM students
-WHERE user_id='$user_id'");
+    "SELECT student_id
+    FROM students
+    WHERE user_id='$user_id'");
 
-$row = mysqli_fetch_assoc($getStudent);
+    $row = mysqli_fetch_assoc($getStudent);
 
-$student_id = $row['student_id'];
+    $student_id = $row['student_id'];
 
-$query = mysqli_query($conn,
+    $query = mysqli_query($conn,
 
-"SELECT *
-FROM attendance
-WHERE student_id='$student_id'
-ORDER BY attendance_id DESC");
+    "SELECT *
+    FROM attendance
+    WHERE student_id='$student_id'
+    ORDER BY attendance_id DESC");
 
-?>
+    ?>
 
-<!DOCTYPE html>
-<html>
+    <!DOCTYPE html>
+    <html>
 
-<head>
+    <head>
 
-    <title>Attendance History</title>
+        <title>Attendance History</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+            rel="stylesheet">
 
-</head>
+    </head>
 
-<body>
+    <body>
+        <?php include("sidebar.php"); ?>
 
-<div class="container mt-5">
+    <div class="main-content">
 
-    <h3>Attendance History</h3>
+        <?php include("header.php"); ?>
 
-    <table class="table table-bordered">
+        
 
-        <tr>
 
-            <th>ID</th>
 
-            <th>Status</th>
+    <div class="container mt-5">
 
-            <th>Date</th>
+        <h3>Attendance History</h3>
 
-        </tr>
+        <table class="table table-bordered">
 
-        <?php
+            <tr>
 
-        while($data = mysqli_fetch_assoc($query))
-        {
+                <th>ID</th>
 
-        ?>
+                <th>Status</th>
 
-        <tr>
+                <th>Date</th>
 
-            <td><?php echo $data['attendance_id']; ?></td>
+            </tr>
 
-            <td><?php echo $data['status']; ?></td>
+            <?php
 
-            <td><?php echo $data['created_at']; ?></td>
+            while($data = mysqli_fetch_assoc($query))
+            {
 
-        </tr>
+            ?>
 
-        <?php
+            <tr>
 
-        }
+                <td><?php echo $data['attendance_id']; ?></td>
 
-        ?>
+                <td><?php echo $data['status']; ?></td>
 
-    </table>
+                <td><?php echo $data['created_at']; ?></td>
 
-</div>
+            </tr>
 
-</body>
+            <?php
 
-</html>
+            }
+
+            ?>
+
+        </table>
+
+    </div>
+    </div>
+
+    </body>
+
+    </html>

@@ -1,229 +1,280 @@
 <?php
-
 session_start();
 
-if(!isset($_SESSION['user_id']) || $_SESSION['role'] != "student")
-{
+/* =========================================================
+   STUDENT SECURITY
+========================================================= */
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== "student") {
     header("Location: ../login.php");
     exit();
 }
 
-include("../config/db.php");
+/* =========================================================
+   DATABASE CONNECTION
+========================================================= */
+require_once("../config/db.php");
 
-$user_id = $_SESSION['user_id'];
+$user_id = (int)$_SESSION['user_id'];
 
-$query = mysqli_query($conn, "
+/* Student Profile Info */
+$query = "
+    SELECT
+        u.name,
+        u.email,
+        s.student_id,
+        s.class,
+        s.roll_number,
+        s.attendance
+    FROM users u
+    INNER JOIN students s ON u.id = s.user_id
+    WHERE u.id = ?
+    LIMIT 1
+";
+$stmt = mysqli_prepare($conn, $query);
+mysqli_stmt_bind_param($stmt, "i", $user_id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
 
-SELECT
-users.*,
-students.student_id,
-students.class,
-students.roll_number
+if (!$result || mysqli_num_rows($result) == 0) {
+    die("Student information not found.");
+}
+$student = mysqli_fetch_assoc($result);
+mysqli_stmt_close($stmt);
 
-FROM users
+$student_name = $student['name'];
+$student_email = $student['email'];
+$student_id = (int)$student['student_id'];
+$student_class = $student['class'];
+$roll_number = $student['roll_number'];
+$attendance = (float)($student['attendance'] ?? 0);
 
-JOIN students
-ON users.id = students.user_id
+/* Subject Marks */
+$marks_query = "
+    SELECT
+        sub.subject_name,
+        m.internal_marks,
+        m.external_marks,
+        (COALESCE(m.internal_marks,0) + COALESCE(m.external_marks,0)) AS total_marks
+    FROM marks m
+    INNER JOIN subjects sub ON m.subject_id = sub.subject_id
+    WHERE m.student_id = ?
+";
+$stmt = mysqli_prepare($conn, $marks_query);
+mysqli_stmt_bind_param($stmt, "i", $student_id);
+mysqli_stmt_execute($stmt);
+$marks_result = mysqli_stmt_get_result($stmt);
 
-WHERE users.id='$user_id'
+$subject_marks = [];
+$total_score_sum = 0;
+$marks_count = 0;
 
-");
+if ($marks_result) {
+    while ($row = mysqli_fetch_assoc($marks_result)) {
+        $subject_marks[] = $row;
+        $total_score_sum += (int)$row['total_marks'];
+        $marks_count++;
+    }
+}
+mysqli_stmt_close($stmt);
 
-$student = mysqli_fetch_assoc($query);
+$average_marks = ($marks_count > 0) ? round($total_score_sum / $marks_count) : 0;
+$total_subjects = count($subject_marks);
 
-$student_id = $student['student_id'];
-
-$total = mysqli_fetch_assoc(
-    mysqli_query($conn,
-    "SELECT COUNT(*) AS total
-     FROM attendance
-     WHERE student_id='$student_id'")
-);
-
-$present = mysqli_fetch_assoc(
-    mysqli_query($conn,
-    "SELECT COUNT(*) AS present
-     FROM attendance
-     WHERE student_id='$student_id'
-     AND status='Present'")
-);
-
-$totalAttendance = $total['total'];
-
-$presentAttendance = $present['present'];
-
-$attendancePercentage = 0;
-
-if($totalAttendance>0)
-{
-    $attendancePercentage =
-    round(($presentAttendance/$totalAttendance)*100,2);
+/* Latest AI Prediction */
+$latest_prediction = "Pending Run";
+$pred_query = mysqli_query($conn, "SELECT * FROM prediction_history WHERE student_id = '$student_id' ORDER BY created_at DESC LIMIT 1");
+if ($pred_query && mysqli_num_rows($pred_query) > 0) {
+    $pred_row = mysqli_fetch_assoc($pred_query);
+    $latest_prediction = !empty($pred_row['result']) ? $pred_row['result'] : ($pred_row['prediction'] ?? 'N/A');
 }
 
+$page_title = "Student Dashboard";
 ?>
 
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Student Dashboard</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
-<link rel="stylesheet" href="../css/dashboard.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | EduNexAI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
 </head>
 
 <body>
-
 <div class="wrapper">
-
     <?php include("sidebar.php"); ?>
 
     <div class="main-content">
-
         <?php include("header.php"); ?>
 
-        <div class="container-fluid mt-4">
-
-            <div class="card shadow-sm mb-4">
-
-                <div class="card-body">
-
-                    <h3>
-
-                        Welcome,
-
-                        <?php echo $student['name']; ?>
-
-                    </h3>
-
-                    <p>
-
-                        Smart Student Performance & Learning Analytics System
-
-                    </p>
-
+        <!-- Hero Welcome Banner -->
+        <div class="hero-banner">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h3>Welcome back, <?php echo htmlspecialchars($student_name); ?>! 🎓</h3>
+                    <p>EduNexAI Scholar Portal. Track your subject marks, attendance rate, and Machine Learning performance prediction.</p>
                 </div>
+                <div class="d-flex gap-2">
+                    <span class="badge bg-white text-dark px-3 py-2 fw-bold"><i class="fas fa-graduation-cap text-primary me-1"></i> Class: <?php echo htmlspecialchars($student_class); ?></span>
+                    <span class="badge bg-primary px-3 py-2 fw-bold"><i class="fas fa-hashtag me-1"></i> Roll: <?php echo htmlspecialchars($roll_number); ?></span>
+                </div>
+            </div>
+        </div>
 
+        <!-- Stat Widgets Row -->
+        <div class="row g-3 mb-4">
+            <div class="col-xl-3 col-md-6">
+                <div class="card border-0 shadow-sm card-hover-effect">
+                    <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-muted small fw-bold text-uppercase">Overall Attendance</span>
+                            <h2 class="fw-bold <?php echo ($attendance >= 75) ? 'text-success' : 'text-danger'; ?> mb-0 mt-1"><?php echo number_format($attendance, 1); ?>%</h2>
+                            <small class="text-muted"><i class="fas fa-chart-pie me-1"></i>Classes Attended</small>
+                        </div>
+                        <div class="dashboard-icon icon-blue">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="row">
-
-              <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
-
-                    <div class="card dashboard-card text-center">
-
-                        <div class="card-body">
-
-                            <i class="fas fa-id-card dashboard-icon"></i>
-
-                            <h5>Enrollment</h5>
-
-                            <h4>
-
-                                <?php echo $student['enrollment_no']; ?>
-
-                            </h4>
-
+            <div class="col-xl-3 col-md-6">
+                <div class="card border-0 shadow-sm card-hover-effect">
+                    <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-muted small fw-bold text-uppercase">Average Score</span>
+                            <h2 class="fw-bold text-dark mb-0 mt-1"><?php echo $average_marks; ?> / 100</h2>
+                            <small class="text-primary fw-bold"><i class="fas fa-award me-1"></i>Overall GPA Standing</small>
                         </div>
-
-                    </div>
-
-                </div>
-
-              <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
-
-                    <div class="card dashboard-card text-center">
-
-                        <div class="card-body">
-
-                            <i class="fas fa-users dashboard-icon"></i>
-
-                            <h5>Class</h5>
-
-                            <h4>
-
-                                <?php echo $student['class']; ?>
-
-                            </h4>
-
+                        <div class="dashboard-icon icon-green">
+                            <i class="fas fa-chart-line"></i>
                         </div>
-
                     </div>
-
                 </div>
-
-                <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
-
-                    <div class="card dashboard-card text-center">
-
-                        <div class="card-body">
-
-                            <i class="fas fa-list-ol dashboard-icon"></i>
-
-                            <h5>Roll No</h5>
-
-                            <h4>
-
-                                <?php echo $student['roll_number']; ?>
-
-                            </h4>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-           <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
-
-                    <div class="card dashboard-card text-center">
-
-                        <div class="card-body">
-
-                            <i class="fas fa-calendar-check dashboard-icon"></i>
-
-                           <h5>Attendance</h5>
-
-<h4>
-
-<?php echo $attendancePercentage; ?>%
-
-</h4>
-
-<p class="text-muted mb-0" style="font-size:14px;">
-Present :
-<?php echo $presentAttendance; ?>
-/
-<?php echo $totalAttendance; ?>
-</p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
             </div>
 
+            <div class="col-xl-3 col-md-6">
+                <div class="card border-0 shadow-sm card-hover-effect">
+                    <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-muted small fw-bold text-uppercase">Enrolled Subjects</span>
+                            <h2 class="fw-bold text-dark mb-0 mt-1"><?php echo number_format($total_subjects); ?></h2>
+                            <small class="text-warning fw-bold"><i class="fas fa-book me-1"></i>Registered Courses</small>
+                        </div>
+                        <div class="dashboard-icon icon-orange">
+                            <i class="fas fa-book-bookmark"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+                <div class="card border-0 shadow-sm card-hover-effect">
+                    <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-muted small fw-bold text-uppercase">AI Standing Prediction</span>
+                            <h2 class="fw-bold text-dark mb-0 mt-1" style="font-size: 20px; margin-top: 4px;"><?php echo htmlspecialchars($latest_prediction); ?></h2>
+                            <small class="text-info fw-bold"><i class="fas fa-microchip me-1"></i>ML Risk Model</small>
+                        </div>
+                        <div class="dashboard-icon icon-purple">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Action Shortcuts -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-6">
+                <a href="subjects.php" class="quick-action-tile">
+                    <i class="fas fa-book-open"></i>
+                    <h6>My Subjects</h6>
+                </a>
+            </div>
+            <div class="col-md-3 col-6">
+                <a href="marks.php" class="quick-action-tile">
+                    <i class="fas fa-chart-bar"></i>
+                    <h6>View Marks</h6>
+                </a>
+            </div>
+            <div class="col-md-3 col-6">
+                <a href="ai_prediction.php" class="quick-action-tile">
+                    <i class="fas fa-robot"></i>
+                    <h6>AI Risk Analysis</h6>
+                </a>
+            </div>
+            <div class="col-md-3 col-6">
+                <a href="profile.php" class="quick-action-tile">
+                    <i class="fas fa-user-graduate"></i>
+                    <h6>My Profile</h6>
+                </a>
+            </div>
+        </div>
+
+        <!-- My Marks Overview Card -->
+        <div class="card border-0 shadow-sm mb-4 card-hover-effect">
+            <div class="card-header bg-white py-3 card-header-flex">
+                <div>
+                    <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-chart-bar text-primary me-2"></i>My Academic Subject Performance</h5>
+                    <small class="text-muted">Summary of internal and external scores across registered courses</small>
+                </div>
+                <a href="marks.php" class="btn btn-outline-primary btn-sm">Full Report</a>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Subject Name</th>
+                                <th>Internal Marks</th>
+                                <th>External Marks</th>
+                                <th>Total Marks</th>
+                                <th class="text-end pe-4">Grade Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php if (count($subject_marks) > 0): ?>
+                            <?php foreach ($subject_marks as $m): 
+                                $total = (int)$m['total_marks'];
+                                $badge_class = ($total >= 40) ? 'badge-pass' : 'badge-fail';
+                                $status_text = ($total >= 40) ? 'Passed' : 'Needs Review';
+                            ?>
+                            <tr>
+                                <td class="ps-4">
+                                    <span class="fw-semibold text-dark"><i class="fas fa-book text-primary me-2"></i><?php echo htmlspecialchars($m['subject_name']); ?></span>
+                                </td>
+                                <td><?php echo (int)$m['internal_marks']; ?> / 40</td>
+                                <td><?php echo (int)$m['external_marks']; ?> / 60</td>
+                                <td class="fw-bold text-dark fs-6"><?php echo $total; ?> / 100</td>
+                                <td class="text-end pe-4">
+                                    <span class="badge-status <?php echo $badge_class; ?>"><?php echo $status_text; ?></span>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <i class="fas fa-chart-bar"></i>
+                                        <h5>No Marks Recorded Yet</h5>
+                                        <p>Your academic marks will appear here once entered by your course faculty.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
     </div>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
-
 </html>

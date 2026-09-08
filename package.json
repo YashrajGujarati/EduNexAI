@@ -1,0 +1,13 @@
+{
+  "name": "edunexai",
+  "version": "1.0.0",
+  "description": "EduNexAI - AI-driven Student Performance & Analytics System",
+  "main": "login.php",
+  "scripts": {
+    "dev": "php -S localhost:8000",
+    "start": "php -S localhost:8000"
+  },
+  "keywords": [],
+  "author": "Yashraj Gujarati",
+  "license": "ISC"
+}

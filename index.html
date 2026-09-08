@@ -3,419 +3,583 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduNex AI | Smart Student Performance</title>
-     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-        <link rel="stylesheet" href="css/style.css">
+    <title>EduNexAI — Smart Student Performance & Learning Analytics System</title>
+    <meta name="description" content="EduNexAI is an AI-powered student performance analytics platform. Track marks, attendance, and predict academic outcomes with Machine Learning.">
 
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
-    <nav class="navbar  navbar-expand-lg navbar-dark">
+
+<!-- =========================================================
+     NAVBAR
+========================================================= -->
+
+<nav class="navbar navbar-expand-lg">
     <div class="container">
-       <a class="navbar-brand fw-bold" href="#">EduNex AI</a>
 
-<button class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#menu">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-graduation-cap me-2" style="color:#60a5fa;-webkit-text-fill-color:initial;background:none;"></i>
+            EduNexAI
+        </a>
 
-    <span class="navbar-toggler-icon"></span>
+        <button class="navbar-toggler border-0" type="button"
+            data-bs-toggle="collapse" data-bs-target="#navMenu"
+            style="color:white;">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-</button>
-
-<div class="collapse navbar-collapse" id="menu">
-            <ul class="navbar-nav ms-auto">
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav ms-auto align-items-center gap-1">
                 <li class="nav-item">
-                        <a class="nav-link" href="#">Home</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#features">Features</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#about">About</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="btn btn-warning ms-3" href="login.php">
-                            Login
-                        </a>
-                    </li>
-
+                    <a class="nav-link" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#features">Features</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#roles">Who It's For</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#workflow">How It Works</a>
+                </li>
+                <li class="nav-item ms-2">
+                    <a class="btn-nav-login" href="login.php">
+                        <i class="fas fa-sign-in-alt me-1"></i> Login
+                    </a>
+                </li>
             </ul>
-            </div>
+        </div>
+
     </div>
-    </nav>
-    <section class="hero">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <h1>
-                        Smart Student Performance
-                    </h1>
-                    <h2>
-                        & Learning Analytics System
-                    </h2>
-                    <p>
-                        AI Powered Student Analytics Platform
-                        using Machine Learning, PHP and MySQL.
-                    </p>
-                    <a href="login.php" class="btn btn-primary btn-lg me-2">
-                        Get Started
-                    </a>
-                    <a href="#features" class="btn btn-outline-light btn-lg">
-                        Learn More
-                    </a>
-                </div>
-                <div class="col-lg-6 text-center">
-                    <img src="assets/images/hero.png"
-                        class="img-fluid hero-image">
-                </div>
-            </div>
-        </div>
-    </section>
-<section class="features py-5" id="features">
-        <div class="container">
-            <h2 class="text-center mb-5">
-                Our Features
-            </h2>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="feature-box">
-                        <i class="fas fa-user-graduate"></i>
-                        <h4>Student Panel</h4>
-                        <p>
-                            View attendance, marks,
-                            AI prediction and reports.
-                        </p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="feature-box">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                        <h4>Faculty Panel</h4>
-                        <p>
-                            Upload marks and
-                            attendance easily.
-                        </p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="feature-box">
-                        <i class="fas fa-brain"></i>
-                        <h4>AI Prediction</h4>
-                        <p>
-                            Predict student performance
-                            using Machine Learning.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
- <section class="about py-5 bg-light" id="about">
+</nav>
 
-        <div class="container">
 
-            <div class="row align-items-center">
+<!-- =========================================================
+     HERO SECTION
+========================================================= -->
 
-                <div class="col-lg-6">
-
-                    <img src="assets/images/about.png"
-                        class="img-fluid">
-
-                </div>
-
-                <div class="col-lg-6">
-
-                    <h2>About EduNexAI</h2>
-
-                    <p>
-
-                        EduNexAI is a Smart Student Performance &
-                        Learning Analytics System developed using
-                        PHP, MySQL, Bootstrap and Python Machine
-                        Learning.
-
-                    </p>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-<section class="why-us py-5">
+<section class="hero">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2>Why Choose EduNexAI?</h2>
-            <p class="text-muted">
-                A complete AI-powered student performance management solution.
-            </p>
-      </div>
-        <div class="row g-4">
-        <div class="col-md-3">
-            <div class="feature-box">
-                    <i class="fas fa-chart-line"></i>
-                    <h5>Performance Analytics</h5>
-                    <p>
-                        Analyze student performance using interactive dashboards.
-                    </p>
+        <div class="row align-items-center gy-5">
+
+            <!-- Left: Text -->
+            <div class="col-lg-6 hero-content">
+
+                <div class="hero-badge">
+                    <i class="fas fa-brain"></i>
+                    AI-Powered Education Analytics
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="feature-box">
-                 <i class="fas fa-robot"></i>
-                    <h5>AI Prediction</h5>
-                    <p>
-                        Predict future academic results using Machine Learning.
-                    </p>
+
+                <h1>
+                    Smart Academic<br>
+                    <span class="gradient-text">Performance</span><br>
+                    Platform
+                </h1>
+
+                <p class="hero-subtitle">
+                    EduNexAI uses Machine Learning to analyze student attendance,
+                    marks, and predict academic outcomes — helping institutions
+                    make data-driven decisions.
+                </p>
+
+                <div class="hero-buttons">
+                    <a href="login.php" class="btn-hero-primary">
+                        <i class="fas fa-rocket"></i>
+                        Get Started Free
+                    </a>
+                    <a href="#features" class="btn-hero-outline">
+                        <i class="fas fa-play-circle"></i>
+                        See Features
+                    </a>
                 </div>
+
             </div>
-            <div class="col-md-3">
-                <div class="feature-box">
-                    <i class="fas fa-book-open"></i>
-                    <h5>Academic Reports</h5>
-                    <p>
-                        Generate detailed reports with graphs and insights.
-                    </p>
-             </div>
-            </div>
-         <div class="col-md-3">
-                <div class="feature-box">
-                    <i class="fas fa-shield-alt"></i>
-                    <h5>Secure System</h5>
-                    <p>
-                       Role-based authentication for Admin, Faculty and Students.
-                    </p>
+
+            <!-- Right: Visual Card -->
+            <div class="col-lg-6 hero-visual">
+
+                <div class="hero-card">
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-4">
+                            <div class="hero-card-stat">
+                                <div class="stat-num">500+</div>
+                                <div class="stat-label">Students</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="hero-card-stat">
+                                <div class="stat-num">98%</div>
+                                <div class="stat-label">AI Accuracy</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="hero-card-stat">
+                                <div class="stat-num">3</div>
+                                <div class="stat-label">Panels</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <span class="hero-pill">
+                            <i class="fas fa-user-graduate"></i> Student Dashboard
+                        </span>
+                        <span class="hero-pill">
+                            <i class="fas fa-chalkboard-teacher"></i> Faculty Panel
+                        </span>
+                        <span class="hero-pill">
+                            <i class="fas fa-user-shield"></i> Admin Control
+                        </span>
+                        <span class="hero-pill">
+                            <i class="fas fa-brain"></i> AI Prediction
+                        </span>
+                        <span class="hero-pill">
+                            <i class="fas fa-chart-pie"></i> Analytics
+                        </span>
+                        <span class="hero-pill">
+                            <i class="fas fa-file-alt"></i> PDF Reports
+                        </span>
+                    </div>
+
                 </div>
+
             </div>
-       </div>
+
+        </div>
     </div>
 </section>
-<section class="py-5 bg-light">
-<div class="container">
-<h2 class="text-center mb-5">
-System Workflow
-</h2>
-<div class="row text-center">
-<div class="col-md-2">
-<i class="fas fa-sign-in-alt fa-3x text-primary"></i>
-<h5 class="mt-3">
-Login
-</h5>
-</div>
-<div class="col-md-2">
-<i class="fas fa-user-edit fa-3x text-success"></i>
-<h5 class="mt-3">
-Faculty Uploads Data
 
-</h5>
 
-</div>
+<!-- =========================================================
+     STATS SECTION
+========================================================= -->
 
-<div class="col-md-2">
+<section class="section-stats">
+    <div class="container">
+        <div class="row justify-content-center gy-4">
 
-<i class="fas fa-database fa-3x text-danger"></i>
+            <div class="col-6 col-md-3">
+                <div class="stat-box fade-up">
+                    <div class="number" data-target="500">0</div>
+                    <div class="label">Students Managed</div>
+                </div>
+            </div>
 
-<h5 class="mt-3">
+            <div class="col-md-auto d-none d-md-flex align-items-center">
+                <div class="stat-divider"></div>
+            </div>
 
-MySQL Database
+            <div class="col-6 col-md-3">
+                <div class="stat-box fade-up">
+                    <div class="number" data-target="25">0</div>
+                    <div class="label">Faculty Members</div>
+                </div>
+            </div>
 
-</h5>
+            <div class="col-md-auto d-none d-md-flex align-items-center">
+                <div class="stat-divider"></div>
+            </div>
 
-</div>
+            <div class="col-6 col-md-3">
+                <div class="stat-box fade-up">
+                    <div class="number" data-target="98" data-suffix="%">0</div>
+                    <div class="label">Prediction Accuracy</div>
+                </div>
+            </div>
 
-<div class="col-md-2">
+            <div class="col-md-auto d-none d-md-flex align-items-center">
+                <div class="stat-divider"></div>
+            </div>
 
-<i class="fas fa-brain fa-3x text-warning"></i>
+            <div class="col-6 col-md-3">
+                <div class="stat-box fade-up">
+                    <div class="number" data-target="24" data-suffix="/7">0</div>
+                    <div class="label">Always Available</div>
+                </div>
+            </div>
 
-<h5 class="mt-3">
-
-Python AI
-
-</h5>
-
-</div>
-
-<div class="col-md-2">
-
-<i class="fas fa-chart-bar fa-3x text-info"></i>
-
-<h5 class="mt-3">
-
-Analytics
-
-</h5>
-
-</div>
-
-<div class="col-md-2">
-
-<i class="fas fa-user-graduate fa-3x text-secondary"></i>
-
-<h5 class="mt-3">
-
-Student Result
-
-</h5>
-
-</div>
-
-</div>
-
-</div>
-
+        </div>
+    </div>
 </section>
-<section class="py-5">
 
-<div class="container">
 
-<div class="row text-center">
+<!-- =========================================================
+     FEATURES SECTION
+========================================================= -->
 
-<div class="col-md-3">
+<section class="section-features" id="features">
+    <div class="container">
 
-<h1 class="display-4 text-primary">
-
-500+
-
-</h1>
-
-<p>
-
-Students
-
-</p>
-
-</div>
-
-<div class="col-md-3">
-
-<h1 class="display-4 text-primary">
-
-25+
-
-</h1>
-
-<p>
-
-Faculty Members
-
-</p>
-
-</div>
-
-<div class="col-md-3">
-
-<h1 class="display-4 text-primary">
-
-98%
-
-</h1>
-
-<p>
-
-Prediction Accuracy
-
-</p>
-
-</div>
-
-<div class="col-md-3">
-
-<h1 class="display-4 text-primary">
-
-24/7
-
-</h1>
-
-<p>
-
-System Available
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-<section class="py-5 bg-light">
-
-<div class="container">
-
-<div class="text-center mb-5">
-
-<h2>
-
-Contact Us
-
-</h2>
-
-</div>
-
-<div class="row">
-
-<div class="col-md-6">
-
-<input type="text"
-
-class="form-control mb-3"
-
-placeholder="Your Name">
-
-<input type="email"
-
-class="form-control mb-3"
-
-placeholder="Email">
-
-<textarea
-
-class="form-control mb-3"
-
-rows="5"
-
-placeholder="Message"></textarea>
-
-<button class="btn btn-primary">
-
-Send Message
-
-</button>
-
-</div>
-
-<div class="col-md-6">
-
-<img src="assets/images/contact.png"
-
-class="img-fluid">
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-    <footer>
-     <div class="container">
-            <p>
-                © 2026 EduNexAI | All Rights Reserved.
+        <div class="text-center mb-5 fade-up">
+            <div class="section-label">Core Features</div>
+            <h2 class="section-title mt-2">Everything You Need to<br>Track Academic Performance</h2>
+            <p class="section-subtitle mt-3">
+                A complete ecosystem for students, faculty, and administrators to manage and understand academic data.
             </p>
         </div>
-    </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/script.js"></script>
 
-</body>
+        <div class="row g-4">
 
-</html>
+            <div class="col-md-6 col-lg-4 fade-up">
+                <div class="feature-card">
+                    <div class="feature-icon icon-blue">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h4>AI Prediction Engine</h4>
+                    <p>Uses Python scikit-learn Machine Learning to predict student performance based on attendance and marks data.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 fade-up">
+                <div class="feature-card">
+                    <div class="feature-icon icon-purple">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h4>Interactive Analytics</h4>
+                    <p>Visual dashboards with Chart.js bar charts, pie charts, and performance breakdowns for all roles.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 fade-up">
+                <div class="feature-card">
+                    <div class="feature-icon icon-green">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h4>Attendance Tracking</h4>
+                    <p>Faculty can mark, update, and monitor daily attendance. Students view their attendance history in real time.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 fade-up">
+                <div class="feature-card">
+                    <div class="feature-icon icon-orange">
+                        <i class="fas fa-pen-to-square"></i>
+                    </div>
+                    <h4>Marks Management</h4>
+                    <p>Internal (0–40) and external (0–60) marks entry by faculty. Students view subject-wise marks and grades.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 fade-up">
+                <div class="feature-card">
+                    <div class="feature-icon icon-pink">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h4>PDF & Excel Reports</h4>
+                    <p>Generate and download detailed academic reports. Export student data to Excel for offline analysis.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 fade-up">
+                <div class="feature-card">
+                    <div class="feature-icon icon-teal">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <h4>Role-Based Security</h4>
+                    <p>Separate secure panels for Admin, Faculty, and Students. Each role sees only what they are authorized to view.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- =========================================================
+     ROLES / WHO IT'S FOR
+========================================================= -->
+
+<section class="section-roles" id="roles">
+    <div class="container">
+
+        <div class="text-center mb-5 fade-up">
+            <div class="section-label">User Roles</div>
+            <h2 class="section-title mt-2">Designed for Every User</h2>
+            <p class="section-subtitle mt-3">
+                Three dedicated panels, each built specifically for its users' needs.
+            </p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+
+            <!-- Admin -->
+            <div class="col-md-4 fade-up">
+                <div class="role-card">
+                    <div class="role-avatar icon-blue" style="width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:35px;margin:0 auto 24px;">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h4 class="fw-bold text-center mb-1">Admin</h4>
+                    <p class="text-muted text-center small mb-3">Institution-wide control panel</p>
+                    <ul class="role-features">
+                        <li><i class="fas fa-check-circle"></i> Manage Students &amp; Faculty</li>
+                        <li><i class="fas fa-check-circle"></i> Import Students via Excel</li>
+                        <li><i class="fas fa-check-circle"></i> Manage Marks &amp; Subjects</li>
+                        <li><i class="fas fa-check-circle"></i> View All Reports &amp; Analytics</li>
+                        <li><i class="fas fa-check-circle"></i> Export PDF &amp; Excel Reports</li>
+                        <li><i class="fas fa-check-circle"></i> View AI Predictions</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Faculty -->
+            <div class="col-md-4 fade-up">
+                <div class="role-card">
+                    <div class="role-avatar icon-purple" style="width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:35px;margin:0 auto 24px;">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h4 class="fw-bold text-center mb-1">Faculty</h4>
+                    <p class="text-muted text-center small mb-3">Academic management panel</p>
+                    <ul class="role-features">
+                        <li><i class="fas fa-check-circle"></i> Manage Assigned Subjects</li>
+                        <li><i class="fas fa-check-circle"></i> Enter &amp; Update Marks</li>
+                        <li><i class="fas fa-check-circle"></i> Mark Daily Attendance</li>
+                        <li><i class="fas fa-check-circle"></i> View Student Performance</li>
+                        <li><i class="fas fa-check-circle"></i> Access Analytics Charts</li>
+                        <li><i class="fas fa-check-circle"></i> Manage Profile</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Student -->
+            <div class="col-md-4 fade-up">
+                <div class="role-card">
+                    <div class="role-avatar icon-green" style="width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:35px;margin:0 auto 24px;">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h4 class="fw-bold text-center mb-1">Student</h4>
+                    <p class="text-muted text-center small mb-3">Personal academic portal</p>
+                    <ul class="role-features">
+                        <li><i class="fas fa-check-circle"></i> View Marks &amp; Grades</li>
+                        <li><i class="fas fa-check-circle"></i> Track Attendance History</li>
+                        <li><i class="fas fa-check-circle"></i> Performance Analysis Charts</li>
+                        <li><i class="fas fa-check-circle"></i> AI Score Prediction</li>
+                        <li><i class="fas fa-check-circle"></i> View Prediction History</li>
+                        <li><i class="fas fa-check-circle"></i> Manage Profile &amp; Password</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- =========================================================
+     WORKFLOW SECTION
+========================================================= -->
+
+<section class="section-workflow" id="workflow">
+    <div class="container">
+
+        <div class="text-center mb-5 fade-up">
+            <div class="section-label">System Workflow</div>
+            <h2 class="section-title mt-2">How EduNexAI Works</h2>
+            <p class="section-subtitle mt-3">
+                From login to AI prediction — six simple steps.
+            </p>
+        </div>
+
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-4 text-center">
+
+            <div class="col fade-up">
+                <div class="workflow-step">
+                    <div class="step-circle"><i class="fas fa-sign-in-alt"></i></div>
+                    <div class="step-connector"></div>
+                    <h5>Login</h5>
+                    <p>Role-based secure access</p>
+                </div>
+            </div>
+
+            <div class="col fade-up">
+                <div class="workflow-step">
+                    <div class="step-circle"><i class="fas fa-user-edit"></i></div>
+                    <div class="step-connector"></div>
+                    <h5>Faculty Uploads</h5>
+                    <p>Marks &amp; attendance data</p>
+                </div>
+            </div>
+
+            <div class="col fade-up">
+                <div class="workflow-step">
+                    <div class="step-circle"><i class="fas fa-database"></i></div>
+                    <div class="step-connector"></div>
+                    <h5>MySQL Stores</h5>
+                    <p>All academic data saved</p>
+                </div>
+            </div>
+
+            <div class="col fade-up">
+                <div class="workflow-step">
+                    <div class="step-circle"><i class="fas fa-brain"></i></div>
+                    <div class="step-connector"></div>
+                    <h5>Python AI</h5>
+                    <p>ML model analyzes data</p>
+                </div>
+            </div>
+
+            <div class="col fade-up">
+                <div class="workflow-step">
+                    <div class="step-circle"><i class="fas fa-chart-bar"></i></div>
+                    <div class="step-connector"></div>
+                    <h5>Analytics</h5>
+                    <p>Interactive visual reports</p>
+                </div>
+            </div>
+
+            <div class="col fade-up">
+                <div class="workflow-step">
+                    <div class="step-circle"><i class="fas fa-user-graduate"></i></div>
+                    <h5>Student Views</h5>
+                    <p>Results &amp; predictions</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- =========================================================
+     CTA SECTION
+========================================================= -->
+
+<section class="section-cta">
+    <div class="container">
+        <h2>Ready to Transform Academic Management?</h2>
+        <p>Join institutions already using EduNexAI for smarter, data-driven education.</p>
+        <a href="login.php" class="btn-cta">
+            <i class="fas fa-rocket"></i>
+            Get Started Now
+        </a>
+    </div>
+</section>
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer>
+    <div class="container">
+        <div class="row gy-4">
+
+            <div class="col-lg-4">
+                <div class="footer-brand">EduNexAI</div>
+                <p class="footer-tagline">
+                    Smart Student Performance &amp; Learning Analytics System powered by AI and Machine Learning.
+                </p>
+            </div>
+
+            <div class="col-6 col-lg-2">
+                <div class="footer-heading">Platform</div>
+                <ul class="footer-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#roles">User Roles</a></li>
+                    <li><a href="#workflow">How It Works</a></li>
+                    <li><a href="login.php">Login</a></li>
+                </ul>
+            </div>
+
+            <div class="col-6 col-lg-2">
+                <div class="footer-heading">Panels</div>
+                <ul class="footer-links">
+                    <li><a href="login.php">Admin Panel</a></li>
+                    <li><a href="login.php">Faculty Panel</a></li>
+                    <li><a href="login.php">Student Portal</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="footer-heading">Technology Stack</div>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);font-size:12px;padding:6px 12px;border-radius:50px;">PHP</span>
+                    <span class="badge" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);font-size:12px;padding:6px 12px;border-radius:50px;">MySQL</span>
+                    <span class="badge" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);font-size:12px;padding:6px 12px;border-radius:50px;">Python</span>
+                    <span class="badge" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);font-size:12px;padding:6px 12px;border-radius:50px;">Bootstrap 5</span>
+                    <span class="badge" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);font-size:12px;padding:6px 12px;border-radius:50px;">Chart.js</span>
+                    <span class="badge" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);font-size:12px;padding:6px 12px;border-radius:50px;">scikit-learn</span>
+                    <span class="badge" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);font-size:12px;padding:6px 12px;border-radius:50px;">XAMPP</span>
+                </div>
+            </div>
+
+        </div>
+
+        <hr class="footer-divider">
+        <p class="footer-bottom">© 2026 EduNexAI. All Rights Reserved. Built with ❤️ using PHP, Python &amp; Machine Learning.</p>
+    </div>
+</footer>
+
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+/* =========================================================
+   SCROLL FADE-IN ANIMATION
+========================================================= */
+const fadeEls = document.querySelectorAll('.fade-up');
+const observer = new IntersectionObserver(entries => {
+    entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+            setTimeout(() => entry.target.classList.add('visible'), i * 80);
+            observer.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.1 });
+fadeEls.forEach(el => observer.observe(el));
+
+/* =========================================================
+   COUNTER ANIMATION
+========================================================= */
+const counters = document.querySelectorAll('.number[data-target]');
+const counterObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const el = entry.target;
+            const target = parseInt(el.getAttribute('data-target'));
+            const suffix = el.getAttribute('data-suffix') || '+';
+            let current = 0;
+            const step = Math.ceil(target / 60);
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                el.textContent = current + suffix;
+            }, 25);
+            counterObserver.unobserve(el);
+        }
+    });
+}, { threshold: 0.5 });
+counters.forEach(el => counterObserver.observe(el));
+
+/* =========================================================
+   NAVBAR SCROLL EFFECT
+========================================================= */
+window.addEventListener('scroll', () => {
+    const navbar = document.querySelector('.navbar');
+    if (window.scrollY > 50) {
+        navbar.style.boxShadow = '0 4px 30px rgba(0,0,0,0.25)';
+    } else {
+        navbar.style.boxShadow = 'none';
+    }
+});
+</script>
+
 </body>
 </html>

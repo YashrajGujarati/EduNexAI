@@ -2,18 +2,26 @@
 session_start();
 include("config/db.php");
 
+$error_msg = "";
+$success_msg = "";
+
+if (isset($_SESSION['register_success'])) {
+    $success_msg = $_SESSION['register_success'];
+    unset($_SESSION['register_success']);
+}
+
 if(isset($_POST['login']))
 {
-    $login_id = mysqli_real_escape_string($conn,$_POST['login_id']);
+    $login_id = mysqli_real_escape_string($conn, $_POST['login_id']);
     $password = $_POST['password'];
 
     $query = "SELECT * FROM users
               WHERE email='$login_id'
               OR enrollment_no='$login_id'";
 
-    $result = mysqli_query($conn,$query);
+    $result = mysqli_query($conn, $query);
 
-    if(mysqli_num_rows($result)==1)
+    if(mysqli_num_rows($result) == 1)
     {
         $row = mysqli_fetch_assoc($result);
 
@@ -23,232 +31,216 @@ if(isset($_POST['login']))
             $_SESSION['name'] = $row['name'];
             $_SESSION['role'] = $row['role'];
 
-            if($row['role']=="admin")
+            if($row['role'] == "admin")
             {
                 header("Location: admin/dashboard.php");
                 exit();
             }
-            elseif($row['role']=="faculty")
+            elseif($row['role'] == "faculty")
             {
                 header("Location: faculty/dashboard.php");
                 exit();
             }
-          else
-{
-    if($row['first_login'] == 1)
-    {
-        header("Location: student/change_password.php");
-        exit();
-    }
-    else
-    {
-        header("Location: student/dashboard.php");
-        exit();
-    }
-}
+            else
+            {
+                if($row['first_login'] == 1)
+                {
+                    header("Location: student/change_password.php");
+                    exit();
+                }
+                else
+                {
+                    header("Location: student/dashboard.php");
+                    exit();
+                }
+            }
         }
         else
         {
-            echo "<script>
-            alert('Incorrect Password');
-            </script>";
+            $error_msg = "Incorrect Password. Please check your credentials.";
         }
     }
     else
     {
-        echo "<script>
-        alert('Invalid Login ID');
-        </script>";
+        $error_msg = "Invalid Login ID or Email. User account not found.";
     }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>EduNexAI | Login</title>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
-    <link rel="stylesheet" href="css/login.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="css/login.css?v=<?php echo time(); ?>">
 </head>
-
 <body>
 
-<div class="container">
+<!-- Glowing Mesh Background Orbs -->
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+<div class="bg-orb bg-orb-3"></div>
 
-    <div class="row justify-content-center align-items-center vh-100">
+<div class="login-container">
+    <div class="row align-items-center">
 
-        <div class="col-lg-5">
+        <!-- LEFT COLUMN: HERO SHOWCASE -->
+        <div class="col-lg-6 hero-section">
+            <div class="brand-badge">
+                <i class="fa-solid fa-sparkles"></i> AI ACADEMIC PORTAL
+            </div>
 
-            <div class="login-card">
+            <h1 class="hero-title">
+                Welcome Back to <span class="gradient-highlight">EduNexAI</span>
+            </h1>
 
-                <div class="text-center">
+            <p class="hero-desc">
+                Sign in to access your personalized academic hub, track student performance, analyze learning metrics, and harness predictive AI insights.
+            </p>
 
-                    <i class="fas fa-user-circle login-icon"></i>
-
-                    <h2>Welcome Back</h2>
-
-                    <p>Login to EduNexAI</p>
-
+            <!-- Feature Showcase -->
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div class="feature-info">
+                        <h4>Smart AI Predictions</h4>
+                        <p>Real-time machine learning predictions for student outcomes.</p>
+                    </div>
                 </div>
 
-                <form action="" method="POST">
-
-                    <div class="mb-3">
-
-                        <label class="form-label">
-
-                            Login ID
-
-                        </label>
-
-                        <input
-
-                            type="text"
-
-                            name="login_id"
-
-                            class="form-control"
-
-                            placeholder="Enter Email or Enrollment Number"
-
-                            required>
-
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-chart-pie"></i>
                     </div>
+                    <div class="feature-info">
+                        <h4>Academic Analytics</h4>
+                        <p>Comprehensive attendance tracking & performance visualization.</p>
+                    </div>
+                </div>
 
-                    <div class="mb-3">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-user-lock"></i>
+                    </div>
+                    <div class="feature-info">
+                        <h4>Secure Multi-Role Access</h4>
+                        <p>Dedicated access control for Students, Faculty, & Administrators.</p>
+                    </div>
+                </div>
+            </div>
 
-                        <label class="form-label">
+            <!-- Floating Stat Chip -->
+            <div class="floating-stat-card">
+                <div class="stat-badge">
+                    <i class="fa-solid fa-shield-check"></i>
+                </div>
+                <div>
+                    <div class="stat-text">Encrypted & Secure Login</div>
+                    <div class="stat-sub">Bcrypt Password Protection</div>
+                </div>
+            </div>
+        </div>
 
-                            Password
+        <!-- RIGHT COLUMN: GLASSMORPHISM LOGIN CARD -->
+        <div class="col-lg-6">
+            <div class="login-card">
 
-                        </label>
+                <div class="text-center text-lg-start card-header-box mb-4">
+                    <div class="login-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h2>Account Sign In</h2>
+                    <p>Enter your details to access your dashboard</p>
+                </div>
 
+                <?php if(!empty($success_msg)): ?>
+                    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                        <i class="fa-solid fa-circle-check me-2"></i><?php echo htmlspecialchars($success_msg); ?>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
+                <?php if(!empty($error_msg)): ?>
+                    <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                        <i class="fa-solid fa-circle-exclamation me-2"></i><?php echo htmlspecialchars($error_msg); ?>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
+                <form action="" method="POST" id="loginForm">
+                    <!-- Login ID / Email / Enrollment No -->
+                    <div class="form-group-item">
+                        <label class="form-label">Email or Enrollment Number</label>
                         <div class="input-group">
-
+                            <span class="input-group-text"><i class="fa-regular fa-user"></i></span>
                             <input
-
-                                type="password"
-
-                                id="password"
-
-                                name="password"
-
+                                type="text"
+                                name="login_id"
                                 class="form-control"
-
-                                placeholder="Enter Password"
-
+                                placeholder="Enter Email or Enrollment No"
+                                value="<?php echo isset($_POST['login_id']) ? htmlspecialchars($_POST['login_id']) : ''; ?>"
                                 required>
-
-                            <button
-
-                                class="btn btn-outline-secondary"
-
-                                type="button"
-
-                                id="togglePassword">
-
-                                <i class="fa-solid fa-eye"></i>
-
-                            </button>
-
                         </div>
-
                     </div>
 
-                    <div class="d-flex justify-content-between mb-3">
-
-                        <div>
-
+                    <!-- Password -->
+                    <div class="form-group-item">
+                        <label class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
                             <input
-
-                                type="checkbox"
-
-                                class="form-check-input"
-
-                                id="remember">
-
-                            <label
-
-                                class="form-check-label"
-
-                                for="remember">
-
-                                Remember Me
-
-                            </label>
-
+                                type="password"
+                                id="password"
+                                name="password"
+                                class="form-control"
+                                placeholder="Enter Password"
+                                required>
+                            <button class="btn btn-toggle-pw" type="button" id="togglePassword" title="Show/Hide Password">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
                         </div>
-
-                        <a href="#">
-
-                            Forgot Password?
-
-                        </a>
-
                     </div>
 
-                    <button
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="remember">
+                            <label class="form-check-label" for="remember">Remember Me</label>
+                        </div>
+                        <a href="#" class="text-sm">Forgot Password?</a>
+                    </div>
 
-                        type="submit"
-
-                        name="login"
-
-                        class="btn btn-primary w-100">
-
-                        Login
-
+                    <!-- Submit Button -->
+                    <button type="submit" name="login" class="btn btn-submit-gradient w-100">
+                        <i class="fa-solid fa-right-to-bracket me-2"></i>Sign In
                     </button>
-
                 </form>
 
                 <hr>
 
-                <p class="text-center">
-
-                    Don't have an account?
-
-                    <a href="register.php">
-
-                        Register
-
-                    </a>
-
-                </p>
-
-                <p class="text-center">
-
-                    <a href="index.html">
-
-                        ← Back to Home
-
-                    </a>
-
-                </p>
+                <div class="card-footer-text text-center">
+                    <p class="mb-2">
+                        Don't have an account? <a href="register.php">Create Account</a>
+                    </p>
+                    <p class="mb-0">
+                        <a href="index.html" class="text-muted">
+                            <i class="fa-solid fa-arrow-left me-1"></i>Back to Home
+                        </a>
+                    </p>
+                </div>
 
             </div>
-
         </div>
 
     </div>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script src="js/login.js"></script>
-
+<script src="js/login.js?v=<?php echo time(); ?>"></script>
 </body>
-
-</html>
+</html>
