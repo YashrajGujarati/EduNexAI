@@ -16,6 +16,7 @@ $nav_groups = [
         "items" => [
             ["file" => "manage_users.php", "icon" => "fa-users-gear", "label" => "Manage Users"],
             ["file" => "manage_students.php", "icon" => "fa-user-graduate", "label" => "Manage Students"],
+            ["file" => "manage_fees.php", "icon" => "fa-wallet", "label" => "Fee Management"],
             ["file" => "import_students.php", "icon" => "fa-file-import", "label" => "Import Students"],
             ["file" => "manage_faculty.php", "icon" => "fa-chalkboard-user", "label" => "Manage Faculty"]
         ]

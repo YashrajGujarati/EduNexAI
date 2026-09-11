@@ -5,6 +5,10 @@ USE student_ai_system;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS fee_payments;
+DROP TABLE IF EXISTS student_fees;
+DROP TABLE IF EXISTS assignment_submissions;
+DROP TABLE IF EXISTS assignments;
 DROP TABLE IF EXISTS prediction_history;
 DROP TABLE IF EXISTS predictions;
 DROP TABLE IF EXISTS attendance;
@@ -90,6 +94,64 @@ CREATE TABLE prediction_history (
     result VARCHAR(20),
     risk_level VARCHAR(20),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE CASCADE
+);
+
+-- Assignments table
+CREATE TABLE assignments (
+    assignment_id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    subject_id INT NOT NULL,
+    faculty_id INT NOT NULL,
+    due_date DATETIME NOT NULL,
+    total_marks INT DEFAULT 100,
+    file_path VARCHAR(255) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (subject_id) REFERENCES subjects(subject_id) ON DELETE CASCADE,
+    FOREIGN KEY (faculty_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Assignment Submissions table
+CREATE TABLE assignment_submissions (
+    submission_id INT AUTO_INCREMENT PRIMARY KEY,
+    assignment_id INT NOT NULL,
+    student_id INT NOT NULL,
+    submission_text TEXT DEFAULT NULL,
+    file_path VARCHAR(255) DEFAULT NULL,
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('submitted', 'late', 'graded') DEFAULT 'submitted',
+    marks_obtained INT DEFAULT NULL,
+    feedback TEXT DEFAULT NULL,
+    UNIQUE KEY unique_student_assignment (assignment_id, student_id),
+    FOREIGN KEY (assignment_id) REFERENCES assignments(assignment_id) ON DELETE CASCADE,
+    FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE CASCADE
+);
+
+-- Student Fees table
+CREATE TABLE student_fees (
+    fee_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT NOT NULL UNIQUE,
+    total_fee DECIMAL(10,2) NOT NULL DEFAULT 50000.00,
+    paid_fee DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    due_date DATE DEFAULT NULL,
+    status ENUM('paid', 'partial', 'pending') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE CASCADE
+);
+
+-- Fee Payments table
+CREATE TABLE fee_payments (
+    payment_id INT AUTO_INCREMENT PRIMARY KEY,
+    fee_id INT NOT NULL,
+    student_id INT NOT NULL,
+    amount_paid DECIMAL(10,2) NOT NULL,
+    payment_method VARCHAR(50) NOT NULL,
+    transaction_id VARCHAR(100) UNIQUE NOT NULL,
+    receipt_no VARCHAR(50) UNIQUE NOT NULL,
+    payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    payment_status ENUM('success', 'failed', 'pending') DEFAULT 'success',
+    FOREIGN KEY (fee_id) REFERENCES student_fees(fee_id) ON DELETE CASCADE,
     FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE CASCADE
 );
 

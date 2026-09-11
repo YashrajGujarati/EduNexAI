@@ -16,6 +16,8 @@ $nav_groups = [
         "title" => "Academic Records",
         "items" => [
             ["file" => "subjects.php", "icon" => "fa-book", "label" => "My Subjects"],
+            ["file" => "assignments.php", "icon" => "fa-tasks", "label" => "Assignments"],
+            ["file" => "pay_fees.php", "icon" => "fa-credit-card", "label" => "Pay Fees"],
             ["file" => "attendance.php", "icon" => "fa-calendar-check", "label" => "Attendance"],
             ["file" => "result.php", "icon" => "fa-chart-line", "label" => "My Result"],
             ["file" => "marks.php", "icon" => "fa-chart-bar", "label" => "My Marks"]

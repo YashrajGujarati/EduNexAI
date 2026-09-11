@@ -88,6 +88,33 @@ if ($pred_query && mysqli_num_rows($pred_query) > 0) {
     $latest_prediction = !empty($pred_row['result']) ? $pred_row['result'] : ($pred_row['prediction'] ?? 'N/A');
 }
 
+/* Pending Assignments Check */
+$pending_assign_query = mysqli_query($conn, "
+    SELECT 
+        a.assignment_id,
+        a.title,
+        a.due_date,
+        sub.subject_name
+    FROM assignments a
+    JOIN subjects sub ON a.subject_id = sub.subject_id
+    LEFT JOIN assignment_submissions subm 
+        ON a.assignment_id = subm.assignment_id AND subm.student_id = '$student_id'
+    WHERE subm.submission_id IS NULL
+    ORDER BY a.due_date ASC
+");
+
+$pending_assignments_count = ($pending_assign_query) ? mysqli_num_rows($pending_assign_query) : 0;
+$urgent_due_assignments = [];
+$now_ts = time();
+if ($pending_assign_query) {
+    while ($p_row = mysqli_fetch_assoc($pending_assign_query)) {
+        $due_ts = strtotime($p_row['due_date']);
+        if ($due_ts > $now_ts && ($due_ts - $now_ts <= 48 * 3600)) {
+            $urgent_due_assignments[] = $p_row;
+        }
+    }
+}
+
 $page_title = "Student Dashboard";
 ?>
 
@@ -110,7 +137,7 @@ $page_title = "Student Dashboard";
         <?php include("header.php"); ?>
 
         <!-- Hero Welcome Banner -->
-        <div class="hero-banner">
+        <div class="hero-banner mb-4">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <div>
                     <h3>Welcome back, <?php echo htmlspecialchars($student_name); ?>! 🎓</h3>
@@ -122,6 +149,37 @@ $page_title = "Student Dashboard";
                 </div>
             </div>
         </div>
+
+        <!-- Pending Assignment Notification Banner -->
+        <?php if (!empty($urgent_due_assignments)): ?>
+            <div class="alert alert-danger border-0 shadow-sm rounded-4 mb-4 p-3 d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center me-3" style="width:46px; height:46px; font-size:20px;">
+                        <i class="fas fa-bell fa-bounce"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1 text-danger">Urgent Assignment Due Date Warning!</h6>
+                        <p class="mb-0 small text-dark">
+                            You have <strong><?php echo count($urgent_due_assignments); ?> pending assignment(s)</strong> due in the next 48 hours (e.g. <em><?php echo htmlspecialchars($urgent_due_assignments[0]['title']); ?></em>). Submit before the deadline!
+                        </p>
+                    </div>
+                </div>
+                <a href="assignments.php" class="btn btn-danger rounded-pill px-4 btn-sm">Complete Now</a>
+            </div>
+        <?php elseif ($pending_assignments_count > 0): ?>
+            <div class="alert alert-warning border-0 shadow-sm rounded-4 mb-4 p-3 d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center me-3" style="width:42px; height:42px; font-size:18px;">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1 text-dark">Pending Coursework Notification</h6>
+                        <p class="mb-0 small text-muted">You have <strong><?php echo $pending_assignments_count; ?> assignment(s)</strong> awaiting completion.</p>
+                    </div>
+                </div>
+                <a href="assignments.php" class="btn btn-outline-dark rounded-pill px-4 btn-sm">View Assignments</a>
+            </div>
+        <?php endif; ?>
 
         <!-- Stat Widgets Row -->
         <div class="row g-3 mb-4">
