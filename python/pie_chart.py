@@ -1,11 +1,14 @@
+import os
 import mysql.connector
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="",
-    database="student_ai_system"
+    host=os.getenv('DB_HOST', 'localhost'),
+    user=os.getenv('DB_USER', 'root'),
+    password=os.getenv('DB_PASSWORD', ''),
+    database=os.getenv('DB_NAME', 'student_ai_system')
 )
 
 cursor = conn.cursor()
@@ -29,20 +32,22 @@ for row in result:
 
 plt.figure(figsize=(8, 8))
 
-plt.pie(
-    values,
-    labels=labels,
-    autopct="%1.1f%%",
-    startangle=90
-)
+if values:
+    plt.pie(
+        values,
+        labels=labels,
+        autopct="%1.1f%%",
+        startangle=90
+    )
 
 plt.title("Student Performance Analysis")
 
-plt.savefig(
-    r"D:\Xampp\htdocs\EduNexAI\python\output\pie_chart.png"
-)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+output_dir = os.path.join(script_dir, "output")
+os.makedirs(output_dir, exist_ok=True)
 
-plt.show()
+plt.savefig(os.path.join(output_dir, "pie_chart.png"))
+plt.close()
 
 cursor.close()
 conn.close()

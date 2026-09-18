@@ -1,11 +1,12 @@
+import os
 import mysql.connector
 import pandas as pd
 
 conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="",
-    database="student_ai_system"
+    host=os.getenv('DB_HOST', 'localhost'),
+    user=os.getenv('DB_USER', 'root'),
+    password=os.getenv('DB_PASSWORD', ''),
+    database=os.getenv('DB_NAME', 'student_ai_system')
 )
 
 query = """
@@ -23,10 +24,12 @@ GROUP BY users.id
 
 df = pd.read_sql(query, conn)
 
-print(df)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+output_dir = os.path.join(script_dir, "output")
+os.makedirs(output_dir, exist_ok=True)
 
 df.to_csv(
-    r"D:\Xampp\htdocs\EduNexAI\python\output\student_report.csv",
+    os.path.join(output_dir, "student_report.csv"),
     index=False
 )
 
