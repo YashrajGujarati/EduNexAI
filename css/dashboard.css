@@ -567,7 +567,7 @@ body {
 }
 
 .table thead th {
-    background-color: #f8fafc !important;
+    background-color: var(--bg-canvas, #f8fafc);
     color: var(--text-muted);
     font-size: 11px;
     font-weight: 800;
@@ -744,7 +744,8 @@ body {
    DARK THEME MODE OVERRIDES (COMPREHENSIVE VISIBILITY FIX)
 ========================================================= */
 
-body.dark-theme {
+body.dark-theme,
+html.dark-theme {
     --bg-canvas:       #090d16;
     --card-bg:         #111827;
     --text-dark:       #f8fafc;
@@ -758,6 +759,19 @@ body.dark-theme {
 }
 
 /* Force visible light colors for text elements in Dark Mode */
+.dark-theme .text-dark,
+.dark-theme .text-black,
+.dark-theme .text-body,
+.dark-theme h1,
+.dark-theme h2,
+.dark-theme h3,
+.dark-theme h4,
+.dark-theme h5,
+.dark-theme h6,
+.dark-theme label,
+.dark-theme .topbar-title,
+.dark-theme .fw-bold,
+.dark-theme .fw-semibold,
 body.dark-theme .text-dark,
 body.dark-theme .text-black,
 body.dark-theme .text-body,
@@ -774,6 +788,10 @@ body.dark-theme .fw-semibold {
     color: #f8fafc !important;
 }
 
+.dark-theme .text-muted,
+.dark-theme .text-secondary,
+.dark-theme .topbar-subtitle,
+.dark-theme small,
 body.dark-theme .text-muted,
 body.dark-theme .text-secondary,
 body.dark-theme .topbar-subtitle,
@@ -782,29 +800,47 @@ body.dark-theme small {
 }
 
 /* Background overrides in Dark Mode */
+.dark-theme .bg-white,
+.dark-theme .card-header.bg-white,
+.dark-theme .card-body.bg-white,
+.dark-theme .card,
+.dark-theme .card-header,
+.dark-theme .card-body,
+.dark-theme .card-footer,
+.dark-theme .table-responsive,
 body.dark-theme .bg-white,
 body.dark-theme .card-header.bg-white,
-body.dark-theme .topbar {
+body.dark-theme .card-body.bg-white,
+body.dark-theme .card,
+body.dark-theme .card-header,
+body.dark-theme .card-body,
+body.dark-theme .card-footer,
+body.dark-theme .table-responsive {
     background-color: #111827 !important;
     border-color: #1e293b !important;
     color: #f8fafc !important;
 }
 
+.dark-theme .topbar,
 body.dark-theme .topbar {
     background: rgba(17, 24, 39, 0.92) !important;
     border-color: rgba(30, 41, 59, 0.9) !important;
 }
 
+.dark-theme .topbar-user,
 body.dark-theme .topbar-user {
     background: #1e293b !important;
     border-color: #334155 !important;
 }
 
+.dark-theme .topbar-user span,
 body.dark-theme .topbar-user span {
     color: #f8fafc !important;
 }
 
-body.dark-theme .card,
+.dark-theme .profile-card-wrapper,
+.dark-theme .profile-detail-card,
+.dark-theme .quick-action-tile,
 body.dark-theme .profile-card-wrapper,
 body.dark-theme .profile-detail-card,
 body.dark-theme .quick-action-tile {
@@ -813,27 +849,59 @@ body.dark-theme .quick-action-tile {
     color: #f8fafc !important;
 }
 
+.dark-theme .quick-action-tile h6,
 body.dark-theme .quick-action-tile h6 {
     color: #f8fafc !important;
 }
 
-body.dark-theme .card-header {
-    background-color: #111827 !important;
-    border-color: #1e293b !important;
-    color: #f8fafc !important;
-}
-
+.dark-theme .list-group-item,
 body.dark-theme .list-group-item {
     background-color: #111827 !important;
     border-color: #1e293b !important;
     color: #f8fafc !important;
 }
 
-/* Table Dark Overrides */
+/* Complete Table Dark Theme Overrides (Fixes white table rows and unreadable text) */
+.dark-theme .table,
 body.dark-theme .table {
     color: #f8fafc !important;
+    background-color: #111827 !important;
+    --bs-table-bg: #111827 !important;
+    --bs-table-accent-bg: transparent !important;
+    --bs-table-striped-bg: #1e293b !important;
+    --bs-table-color: #f8fafc !important;
+    --bs-table-hover-bg: #1e293b !important;
+    --bs-table-hover-color: #ffffff !important;
+    border-color: #1e293b !important;
 }
 
+.dark-theme .table tr,
+.dark-theme .table td,
+.dark-theme .table th,
+.dark-theme .table > :not(caption) > * > *,
+body.dark-theme .table tr,
+body.dark-theme .table td,
+body.dark-theme .table th,
+body.dark-theme .table > :not(caption) > * > * {
+    background-color: #111827 !important;
+    color: #f8fafc !important;
+    border-color: #1e293b !important;
+}
+
+.dark-theme .table-hover tbody tr:hover,
+.dark-theme .table-hover tbody tr:hover td,
+.dark-theme .table-hover tbody tr:hover th,
+body.dark-theme .table-hover tbody tr:hover,
+body.dark-theme .table-hover tbody tr:hover td,
+body.dark-theme .table-hover tbody tr:hover th {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+}
+
+.dark-theme .table thead th,
+.dark-theme .table-light,
+.dark-theme .table-light th,
+.dark-theme .table-light td,
 body.dark-theme .table thead th,
 body.dark-theme .table-light,
 body.dark-theme .table-light th,
@@ -841,11 +909,6 @@ body.dark-theme .table-light td {
     background-color: #1e293b !important;
     color: #94a3b8 !important;
     border-color: #334155 !important;
-}
-
-body.dark-theme .table tbody td {
-    color: #f8fafc !important;
-    border-color: #1e293b !important;
 }
 
 body.dark-theme .bg-light,
@@ -1126,25 +1189,275 @@ body.dark-theme .search-filter-bar {
 }
 
 /* Dark Mode Overrides for Attendance System */
+.dark-theme .att-stat-card,
+.dark-theme .quick-entry-card,
 body.dark-theme .att-stat-card,
 body.dark-theme .quick-entry-card {
     background: #111827 !important;
     border-color: #1e293b !important;
 }
 
+.dark-theme .att-btn-group,
+.dark-theme .quick-mode-selector,
 body.dark-theme .att-btn-group,
 body.dark-theme .quick-mode-selector {
     background: #1e293b !important;
     border-color: #334155 !important;
 }
 
+.dark-theme .att-toggle-btn,
+.dark-theme .quick-mode-option,
 body.dark-theme .att-toggle-btn,
 body.dark-theme .quick-mode-option {
     color: #94a3b8 !important;
 }
 
+.dark-theme .att-status-badge.badge-unmarked,
 body.dark-theme .att-status-badge.badge-unmarked {
-    background-color: #1e293b;
-    color: #94a3b8;
-    border-color: #334155;
+    background-color: #1e293b !important;
+    color: #94a3b8 !important;
+    border-color: #334155 !important;
+}
+
+/* =========================================================
+   UNIVERSAL MASTER DARK THEME ENGINE (ALL PANELS & COMPONENTS)
+========================================================= */
+
+.dark-theme,
+body.dark-theme {
+    background-color: #090d16 !important;
+    color: #f8fafc !important;
+}
+
+/* 1. All Cards, Headers, Footers & Containers */
+.dark-theme .card,
+.dark-theme .card-header,
+.dark-theme .card-body,
+.dark-theme .card-footer,
+.dark-theme .bg-white,
+.dark-theme .bg-light,
+.dark-theme .bg-body,
+.dark-theme .table-responsive,
+body.dark-theme .card,
+body.dark-theme .card-header,
+body.dark-theme .card-body,
+body.dark-theme .card-footer,
+body.dark-theme .bg-white,
+body.dark-theme .bg-light,
+body.dark-theme .bg-body,
+body.dark-theme .table-responsive {
+    background-color: #111827 !important;
+    border-color: #1e293b !important;
+    color: #f8fafc !important;
+}
+
+/* 2. Complete Table Dark Mode System (No white rows or unreadable text) */
+.dark-theme table,
+.dark-theme .table,
+body.dark-theme table,
+body.dark-theme .table {
+    --bs-table-bg: #111827 !important;
+    --bs-table-accent-bg: transparent !important;
+    --bs-table-striped-bg: #1e293b !important;
+    --bs-table-hover-bg: #1e293b !important;
+    --bs-table-color: #f8fafc !important;
+    --bs-table-hover-color: #ffffff !important;
+    background-color: #111827 !important;
+    color: #f8fafc !important;
+    border-color: #1e293b !important;
+}
+
+.dark-theme table tr,
+.dark-theme table td,
+.dark-theme table th,
+.dark-theme .table tr,
+.dark-theme .table td,
+.dark-theme .table th,
+.dark-theme .table > :not(caption) > * > *,
+body.dark-theme table tr,
+body.dark-theme table td,
+body.dark-theme table th,
+body.dark-theme .table tr,
+body.dark-theme .table td,
+body.dark-theme .table th,
+body.dark-theme .table > :not(caption) > * > * {
+    background-color: #111827 !important;
+    color: #f8fafc !important;
+    border-color: #1e293b !important;
+}
+
+.dark-theme table thead th,
+.dark-theme .table thead th,
+.dark-theme .table-light,
+.dark-theme .table-light th,
+.dark-theme .table-light td,
+body.dark-theme table thead th,
+body.dark-theme .table thead th,
+body.dark-theme .table-light,
+body.dark-theme .table-light th,
+body.dark-theme .table-light td {
+    background-color: #1e293b !important;
+    color: #94a3b8 !important;
+    border-color: #334155 !important;
+}
+
+.dark-theme .table-hover tbody tr:hover,
+.dark-theme .table-hover tbody tr:hover td,
+.dark-theme .table-hover tbody tr:hover th,
+body.dark-theme .table-hover tbody tr:hover,
+body.dark-theme .table-hover tbody tr:hover td,
+body.dark-theme .table-hover tbody tr:hover th {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+}
+
+/* 3. Text & Typography Overrides */
+.dark-theme .text-dark,
+.dark-theme .text-black,
+.dark-theme .text-body,
+.dark-theme h1, .dark-theme h2, .dark-theme h3,
+.dark-theme h4, .dark-theme h5, .dark-theme h6,
+.dark-theme label, .dark-theme .fw-bold, .dark-theme .fw-semibold,
+body.dark-theme .text-dark,
+body.dark-theme .text-black,
+body.dark-theme .text-body,
+body.dark-theme h1, body.dark-theme h2, body.dark-theme h3,
+body.dark-theme h4, body.dark-theme h5, body.dark-theme h6,
+body.dark-theme label, body.dark-theme .fw-bold, body.dark-theme .fw-semibold {
+    color: #f8fafc !important;
+}
+
+.dark-theme .text-muted,
+.dark-theme .text-secondary,
+.dark-theme small,
+body.dark-theme .text-muted,
+body.dark-theme .text-secondary,
+body.dark-theme small {
+    color: #94a3b8 !important;
+}
+
+/* 4. Form Controls & Inputs */
+.dark-theme .form-control,
+.dark-theme .form-select,
+.dark-theme .input-group-text,
+.dark-theme textarea,
+body.dark-theme .form-control,
+body.dark-theme .form-select,
+body.dark-theme .input-group-text,
+body.dark-theme textarea {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+    border-color: #334155 !important;
+}
+
+.dark-theme .form-control::placeholder,
+body.dark-theme .form-control::placeholder {
+    color: #64748b !important;
+}
+
+/* 5. Modals & Dialogs */
+.dark-theme .modal-content,
+.dark-theme .modal-header,
+.dark-theme .modal-body,
+.dark-theme .modal-footer,
+body.dark-theme .modal-content,
+body.dark-theme .modal-header,
+body.dark-theme .modal-body,
+body.dark-theme .modal-footer {
+    background-color: #111827 !important;
+    border-color: #1e293b !important;
+    color: #f8fafc !important;
+}
+
+.dark-theme .btn-close,
+body.dark-theme .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* 6. Dropdowns */
+.dark-theme .dropdown-menu,
+body.dark-theme .dropdown-menu {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark-theme .dropdown-item,
+body.dark-theme .dropdown-item {
+    color: #cbd5e1 !important;
+}
+
+.dark-theme .dropdown-item:hover,
+.dark-theme .dropdown-item:focus,
+body.dark-theme .dropdown-item:hover,
+body.dark-theme .dropdown-item:focus {
+    background-color: #334155 !important;
+    color: #ffffff !important;
+}
+
+/* 7. Tabs & Pagination */
+.dark-theme .nav-tabs,
+body.dark-theme .nav-tabs {
+    border-color: #1e293b !important;
+}
+
+.dark-theme .nav-tabs .nav-link,
+body.dark-theme .nav-tabs .nav-link {
+    color: #94a3b8 !important;
+}
+
+.dark-theme .nav-tabs .nav-link.active,
+body.dark-theme .nav-tabs .nav-link.active {
+    background-color: #111827 !important;
+    color: #3b82f6 !important;
+    border-color: #1e293b #1e293b #111827 !important;
+}
+
+.dark-theme .page-link,
+body.dark-theme .page-link {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #cbd5e1 !important;
+}
+
+.dark-theme .page-item.active .page-link,
+body.dark-theme .page-item.active .page-link {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+    color: #ffffff !important;
+}
+
+/* 8. Special Feature Cards & Widgets (Fee Management, Assignments, QR Placeholders) */
+.dark-theme .fee-card,
+.dark-theme .fee-widget-card,
+.dark-theme .assignment-card,
+.dark-theme .payment-method-card,
+.dark-theme .qr-placeholder,
+.dark-theme .accordion-item,
+.dark-theme .accordion-button,
+body.dark-theme .fee-card,
+body.dark-theme .fee-widget-card,
+body.dark-theme .assignment-card,
+body.dark-theme .payment-method-card,
+body.dark-theme .qr-placeholder,
+body.dark-theme .accordion-item,
+body.dark-theme .accordion-button {
+    background-color: #111827 !important;
+    border-color: #1e293b !important;
+    color: #f8fafc !important;
+}
+
+.dark-theme .payment-method-card:hover,
+.dark-theme .payment-method-card.active,
+body.dark-theme .payment-method-card:hover,
+body.dark-theme .payment-method-card.active {
+    background-color: #1e293b !important;
+    border-color: #3b82f6 !important;
+}
+
+.dark-theme .alert,
+body.dark-theme .alert {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
 }
