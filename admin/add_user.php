@@ -20,6 +20,16 @@ if(isset($_POST['add_user']))
 
     if(mysqli_query($conn,$query))
     {
+        $new_user_id = mysqli_insert_id($conn);
+        if ($role === 'student') {
+            $enroll_no = "EN" . str_pad($new_user_id, 4, "0", STR_PAD_LEFT);
+            @mysqli_query($conn, "UPDATE users SET enrollment_no='$enroll_no' WHERE id=$new_user_id");
+            @mysqli_query($conn, "INSERT INTO students (user_id, class, roll_number, attendance) VALUES ($new_user_id, 'BTech-CS', '$enroll_no', 80.00)");
+            $new_stu_id = mysqli_insert_id($conn);
+            if ($new_stu_id > 0) {
+                @mysqli_query($conn, "INSERT INTO student_fees (student_id, total_fee, paid_fee, due_date, status) VALUES ($new_stu_id, 50000.00, 0.00, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY), 'pending')");
+            }
+        }
         echo "<script>
         alert('User Added Successfully');
         window.location='manage_users.php';

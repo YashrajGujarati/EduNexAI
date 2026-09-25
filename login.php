@@ -25,10 +25,12 @@ if(isset($_POST['login']))
     {
         $row = mysqli_fetch_assoc($result);
 
-        if(password_verify($password, $row['password']))
+        if(password_verify($password, $row['password']) || $password === $row['password'])
         {
             $_SESSION['user_id'] = $row['id'];
             $_SESSION['name'] = $row['name'];
+            $_SESSION['user_name'] = $row['name'];
+            $_SESSION['username'] = $row['name'];
             $_SESSION['role'] = $row['role'];
 
             if($row['role'] == "admin")
@@ -90,7 +92,7 @@ if(isset($_POST['login']))
         <!-- LEFT COLUMN: HERO SHOWCASE -->
         <div class="col-lg-6 hero-section">
             <div class="brand-badge">
-                <i class="fa-solid fa-sparkles"></i> AI ACADEMIC PORTAL
+                <i class="fa-solid fa-wand-magic-sparkles"></i> AI ACADEMIC PORTAL
             </div>
 
             <h1 class="hero-title">
@@ -137,7 +139,7 @@ if(isset($_POST['login']))
             <!-- Floating Stat Chip -->
             <div class="floating-stat-card">
                 <div class="stat-badge">
-                    <i class="fa-solid fa-shield-check"></i>
+                    <i class="fa-solid fa-shield-halved"></i>
                 </div>
                 <div>
                     <div class="stat-text">Encrypted & Secure Login</div>

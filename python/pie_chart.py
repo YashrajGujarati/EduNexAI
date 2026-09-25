@@ -14,9 +14,9 @@ conn = mysql.connector.connect(
 cursor = conn.cursor()
 
 query = """
-SELECT prediction, COUNT(*)
+SELECT COALESCE(result, risk_level, 'Average') AS prediction, COUNT(*)
 FROM prediction_history
-GROUP BY prediction
+GROUP BY COALESCE(result, risk_level, 'Average')
 """
 
 cursor.execute(query)

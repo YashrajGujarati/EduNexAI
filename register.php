@@ -13,7 +13,7 @@ if(isset($_POST['register']))
     $confirm_password = $_POST['confirm_password'];
     $role = mysqli_real_escape_string($conn, $_POST['role'] ?? 'student');
 
-    if(empty($role)) {
+    if(!in_array($role, ['student', 'faculty'])) {
         $role = 'student';
     }
 
@@ -40,6 +40,16 @@ if(isset($_POST['register']))
                        VALUES('$name', '$email', '$hash_password', '$role')";
             if(mysqli_query($conn, $insert))
             {
+                $new_user_id = mysqli_insert_id($conn);
+                if ($role === 'student') {
+                    $enroll_no = "EN" . str_pad($new_user_id, 4, "0", STR_PAD_LEFT);
+                    @mysqli_query($conn, "UPDATE users SET enrollment_no='$enroll_no' WHERE id=$new_user_id");
+                    @mysqli_query($conn, "INSERT INTO students (user_id, class, roll_number, attendance) VALUES ($new_user_id, 'BTech-CS', '$enroll_no', 80.00)");
+                    $new_stu_id = mysqli_insert_id($conn);
+                    if ($new_stu_id > 0) {
+                        @mysqli_query($conn, "INSERT INTO student_fees (student_id, total_fee, paid_fee, due_date, status) VALUES ($new_stu_id, 50000.00, 0.00, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY), 'pending')");
+                    }
+                }
                 $_SESSION['register_success'] = "Registration Successful! Please login to your account.";
                 header("Location: login.php");
                 exit();
@@ -164,12 +174,6 @@ if(isset($_POST['register']))
                             <input type="radio" name="role" value="faculty" class="role-radio" <?php echo (isset($_POST['role']) && $_POST['role'] == 'faculty') ? 'checked' : ''; ?>>
                             <i class="fa-solid fa-chalkboard-user"></i>
                             <span>Faculty</span>
-                        </label>
-
-                        <label class="role-chip <?php echo (isset($_POST['role']) && $_POST['role'] == 'admin') ? 'active' : ''; ?>" data-role="admin" onclick="selectRole('admin')">
-                            <input type="radio" name="role" value="admin" class="role-radio" <?php echo (isset($_POST['role']) && $_POST['role'] == 'admin') ? 'checked' : ''; ?>>
-                            <i class="fa-solid fa-user-shield"></i>
-                            <span>Admin</span>
                         </label>
                     </div>
 

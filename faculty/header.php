@@ -12,7 +12,7 @@ $faculty_name = isset($_SESSION['name']) ? $_SESSION['name'] : (isset($_SESSION[
         <button id="themeToggleBtn" class="btn btn-light border btn-sm p-2 rounded-circle me-3 theme-toggle-btn" title="Toggle Light/Dark Theme" style="width:38px; height:38px; display:flex; align-items:center; justify-content:center;">
             <i class="fas fa-moon text-primary" id="themeToggleIcon" style="font-size:16px;"></i>
         </button>
-        <a href="profile.php" class="topbar-user text-decoration-none" title="Click to View My Profile">
+        <a data-href="profile.php" class="topbar-user text-decoration-none" title="Click to View My Profile">
             <div class="topbar-avatar">
                 <i class="fas fa-chalkboard-user"></i>
             </div>

@@ -435,9 +435,9 @@ $page_title = "My Assignments";
                                 </div>
                             </div>
                         </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
+                    </div> <!-- End col-md-6 col-lg-4 -->
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
     </div>
 </div>

@@ -42,7 +42,7 @@ $nav_groups = [
 
 <div class="sidebar">
     <div class="sidebar-brand-wrapper">
-        <a href="dashboard.php" class="sidebar-brand">
+        <a data-href="dashboard.php" class="sidebar-brand">
             <div class="brand-icon-box">
                 <i class="fas fa-graduation-cap"></i>
             </div>
@@ -63,7 +63,7 @@ $nav_groups = [
             <li class="sidebar-section-label"><?php echo $group['title']; ?></li>
             <?php foreach ($group['items'] as $item): ?>
                 <li>
-                    <a href="<?php echo $item['file']; ?>"
+                    <a data-href="<?php echo $item['file']; ?>"
                        class="<?php echo ($current_page === $item['file']) ? 'active' : ''; ?>">
                         <i class="fas <?php echo $item['icon']; ?>"></i>
                         <span><?php echo $item['label']; ?></span>
@@ -73,10 +73,30 @@ $nav_groups = [
         <?php endforeach; ?>
 
         <li class="mt-3">
-            <a href="../logout.php" class="text-danger-hover">
+            <a data-href="../logout.php" class="text-danger-hover">
                 <i class="fas fa-right-from-bracket"></i>
                 <span>Logout</span>
             </a>
         </li>
     </ul>
 </div>
+
+<script>
+if (!window.dataHrefListenerAttached) {
+    window.dataHrefListenerAttached = true;
+    document.addEventListener('click', function(e) {
+        var navEl = e.target.closest('[data-href]');
+        if (navEl) {
+            var destination = navEl.getAttribute('data-href');
+            if (destination) {
+                e.preventDefault();
+                if (e.ctrlKey || e.metaKey) {
+                    window.open(destination, '_blank');
+                } else {
+                    window.location.href = destination;
+                }
+            }
+        }
+    });
+}
+</script>

@@ -27,9 +27,27 @@ INNER JOIN users ON students.user_id = users.id
 ORDER BY prediction_history.created_at DESC
 ");
 
-$page_title = "AI Student Predictions";
-?>
+/* Handle Batch AI Prediction Trigger */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['run_batch_predictions'])) {
+    $stus = mysqli_query($conn, "SELECT s.student_id, s.attendance, AVG(m.total_marks) as avg_marks FROM students s LEFT JOIN marks m ON s.student_id = m.student_id GROUP BY s.student_id");
+    if ($stus) {
+        while ($st = mysqli_fetch_assoc($stus)) {
+            $sid = (int)$st['student_id'];
+            $att = (float)$st['attendance'];
+            $mrk = (float)($st['avg_marks'] ?? 70);
 
+            if ($att >= 85 && $mrk >= 80) { $pred = 'Excellent'; $risk = 'None'; }
+            elseif ($att >= 75 && $mrk >= 65) { $pred = 'Good'; $risk = 'Low'; }
+            elseif ($att >= 60 && $mrk >= 45) { $pred = 'Average'; $risk = 'Medium'; }
+            else { $pred = 'Poor'; $risk = 'High'; }
+
+            @mysqli_query($conn, "INSERT INTO prediction_history (student_id, predicted_score, result, risk_level) VALUES ($sid, $mrk, '$pred', '$risk')");
+            @mysqli_query($conn, "INSERT INTO predictions (student_id, predicted_score, result, risk_level) VALUES ($sid, $mrk, '$pred', '$risk') ON DUPLICATE KEY UPDATE predicted_score=$mrk, result='$pred', risk_level='$risk'");
+        }
+        $batch_msg = "Batch AI Model evaluation executed successfully for all enrolled students!";
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -51,9 +69,33 @@ $page_title = "AI Student Predictions";
         <?php include("header.php"); ?>
 
         <div class="card shadow-sm border-0 mb-4">
-            <div class="card-body p-4">
-                <h4 class="fw-bold text-dark mb-1"><i class="fas fa-brain text-primary me-2"></i>AI Machine Learning Academic Predictions</h4>
-                <p class="text-muted mb-0">Overview of student risk categories predicted by the Decision Tree Machine Learning model.</p>
+            <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h4 class="fw-bold text-dark mb-1"><i class="fas fa-brain text-primary me-2"></i>AI Machine Learning Academic Predictions</h4>
+                    <p class="text-muted mb-0">Overview of student risk categories predicted by the Decision Tree Machine Learning model.</p>
+                </div>
+                <form method="POST">
+                    <button type="submit" name="run_batch_predictions" class="btn btn-primary btn-lg shadow-sm">
+                        <i class="fas fa-microchip me-2"></i> Run Batch AI Predictions
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <?php if(!empty($batch_msg)): ?>
+            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                <i class="fas fa-check-circle me-2"></i><?php echo htmlspecialchars($batch_msg); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+
+        <!-- Visual Chart Card -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-chart-bar text-primary me-2"></i>Academic Risk Distribution Chart</h5>
+            </div>
+            <div class="card-body p-4" style="height: 300px;">
+                <canvas id="predictionChart"></canvas>
             </div>
         </div>
 
@@ -164,38 +206,37 @@ $page_title = "AI Student Predictions";
 </body>
 </html>
 <script>
-
 const ctx = document.getElementById('predictionChart');
-
-new Chart(ctx, {
-
-    type: 'bar',
-
-    data: {
-
-        labels: [
-            'Excellent',
-            'Good',
-            'Average',
-            'Poor'
-        ],
-
-        datasets: [{
-            label: 'Student Performance',
-
-            data: [
-                <?php echo $excellent; ?>,
-                <?php echo $good; ?>,
-                <?php echo $average; ?>,
-                <?php echo $poor; ?>
-            ],
-
-            borderWidth: 1
-        }]
-    }
-});
-
+if (ctx) {
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Excellent Standing', 'Good Standing', 'Average Risk', 'Poor Risk'],
+            datasets: [{
+                label: 'Students Count',
+                data: [
+                    <?php echo $excellent; ?>,
+                    <?php echo $good; ?>,
+                    <?php echo $average; ?>,
+                    <?php echo $poor; ?>
+                ],
+                backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'],
+                borderRadius: 8,
+                barThickness: 40
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true, ticks: { precision: 0 } }
+            }
+        }
+    });
+}
 </script>
 </body>
-
 </html>
