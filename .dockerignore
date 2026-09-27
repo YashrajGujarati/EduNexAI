@@ -1,7 +1,0 @@
-.git
-.gitignore
-.gemini
-.agents
-docker-compose.yml
-Dockerfile
-README_DOCKER.md
