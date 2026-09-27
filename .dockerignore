@@ -1,0 +1,6 @@
+.git
+.gitignore
+.gemini
+.agents
+docker-compose.yml
+README_DOCKER.md
