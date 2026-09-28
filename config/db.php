@@ -1,5 +1,19 @@
 <?php
 
+// Load .env file if it exists (for local XAMPP development)
+$envFile = __DIR__ . '/../.env';
+if (file_exists($envFile)) {
+    $envVars = parse_ini_file($envFile);
+    if ($envVars) {
+        foreach ($envVars as $key => $value) {
+            if (!getenv($key)) {
+                putenv("$key=$value");
+                $_ENV[$key] = $value;
+            }
+        }
+    }
+}
+
 $db_host = getenv('DB_HOST') ?: (getenv('MYSQLHOST') ?: 'localhost');
 $db_user = getenv('DB_USER') ?: (getenv('MYSQLUSER') ?: 'root');
 $db_pass = getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') : (getenv('MYSQLPASSWORD') !== false ? getenv('MYSQLPASSWORD') : (getenv('MYSQL_ROOT_PASSWORD') !== false ? getenv('MYSQL_ROOT_PASSWORD') : ''));
