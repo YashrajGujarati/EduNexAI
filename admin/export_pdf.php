@@ -16,9 +16,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != "admin") {
    DATABASE & FPDF
 ========================================================= */
 
-include("../config/db.php");
+require_once(__DIR__ . '/../config/db.php');
 
-require("../fpdf/fpdf.php");
+require_once(__DIR__ . '/../fpdf/fpdf.php');
 
 
 /* =========================================================

@@ -1,4 +1,4 @@
-    <?php
+﻿    <?php
 
     session_start();
 
@@ -8,7 +8,7 @@
         exit();
     }
 
-    include("../config/db.php");
+    require_once(__DIR__ . '/../config/db.php');
 
     $user_id = $_SESSION['user_id'];
 

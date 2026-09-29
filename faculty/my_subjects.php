@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 
 if(!isset($_SESSION['user_id']) || $_SESSION['role'] != "faculty") {
@@ -6,7 +6,7 @@ if(!isset($_SESSION['user_id']) || $_SESSION['role'] != "faculty") {
     exit();
 }
 
-include("../config/db.php");
+require_once(__DIR__ . '/../config/db.php');
 
 $faculty_id = $_SESSION['user_id'];
 $query = mysqli_query($conn, "SELECT * FROM subjects WHERE faculty_id = '$faculty_id' ORDER BY subject_id ASC");

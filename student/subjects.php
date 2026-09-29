@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 
 if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== "student") {
@@ -6,7 +6,7 @@ if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== "student") {
     exit();
 }
 
-include("../config/db.php");
+require_once(__DIR__ . '/../config/db.php');
 $query = mysqli_query($conn, "SELECT subjects.*, users.name as faculty_name FROM subjects LEFT JOIN users ON subjects.faculty_id = users.id ORDER BY subject_id ASC");
 $page_title = "My Subjects";
 ?>

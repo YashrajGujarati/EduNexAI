@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 
 /* =========================================================
@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== "student") {
     exit();
 }
 
-require_once("../config/db.php");
+require_once(__DIR__ . '/../config/db.php');
 
 $user_id = (int)$_SESSION['user_id'];
 $message = "";

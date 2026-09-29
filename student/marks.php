@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != "student") {
@@ -6,7 +6,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != "student") {
     exit();
 }
 
-require_once("../config/db.php");
+require_once(__DIR__ . '/../config/db.php');
 $user_id = $_SESSION['user_id'];
 
 /* Get Student ID */

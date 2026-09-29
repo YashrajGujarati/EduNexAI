@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 
 if(!isset($_SESSION['user_id']) || $_SESSION['role'] != "admin"){
@@ -6,7 +6,7 @@ if(!isset($_SESSION['user_id']) || $_SESSION['role'] != "admin"){
     exit();
 }
 
-include("../config/db.php");
+require_once(__DIR__ . '/../config/db.php');
 
 $query = "SELECT id,name FROM users WHERE role='student'";
 $result = mysqli_query($conn,$query);

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 
 /* =========================================================
@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
     exit();
 }
 
-require_once("../config/db.php");
+require_once(__DIR__ . '/../config/db.php');
 $faculty_id = (int)$_SESSION['user_id'];
 
 /* Ensure attendance_logs table exists for topic tracking */
