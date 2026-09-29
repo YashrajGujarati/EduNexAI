@@ -9,13 +9,34 @@
 // On Vercel, environment variables are injected directly — .env is NOT present.
 $envFile = __DIR__ . '/../.env';
 if (file_exists($envFile)) {
-    $envVars = parse_ini_file($envFile);
-    if ($envVars !== false) {
-        foreach ($envVars as $key => $value) {
-            // Only set if not already defined by the actual system environment
-            if (getenv($key) === false) {
-                putenv("$key=$value");
-                $_ENV[$key] = $value;
+    $lines = @file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    if ($lines !== false) {
+        foreach ($lines as $line) {
+            $line = trim($line);
+            // Skip empty lines and comments
+            if ($line === '' || $line[0] === '#' || $line[0] === ';') {
+                continue;
+            }
+            if (strpos($line, '=') !== false) {
+                list($key, $value) = explode('=', $line, 2);
+                $key = trim($key);
+                $value = trim($value);
+
+                // Strip wrapping single or double quotes
+                $len = strlen($value);
+                if ($len >= 2 && (
+                    ($value[0] === '"' && $value[$len - 1] === '"') ||
+                    ($value[0] === "'" && $value[$len - 1] === "'")
+                )) {
+                    $value = substr($value, 1, -1);
+                }
+
+                // Only set if not already defined by the actual system environment
+                if (getenv($key) === false) {
+                    putenv("$key=$value");
+                    $_ENV[$key] = $value;
+                    $_SERVER[$key] = $value;
+                }
             }
         }
     }
@@ -54,13 +75,19 @@ if ($mysql_url) {
 // ============================================================
 // Establish MySQLi connection
 // ============================================================
-$conn = mysqli_connect(
+mysqli_report(MYSQLI_REPORT_OFF);
+$conn = @mysqli_connect(
     $db_host,
     $db_user,
     $db_pass,
     $db_name,
     (int)$db_port
 );
+
+// Fallback to local MySQL if remote database is unreachable
+if (!$conn && $db_host !== 'localhost' && $db_host !== '127.0.0.1') {
+    $conn = @mysqli_connect('localhost', 'root', '', 'student_ai_system', 3306);
+}
 
 if (!$conn) {
     $app_debug = getenv('APP_DEBUG');
