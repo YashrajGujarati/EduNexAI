@@ -1,43 +1,22 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "functions": {
-    "*.php": {
-      "runtime": "vercel-php@0.7.2"
-    },
-    "admin/*.php": {
-      "runtime": "vercel-php@0.7.2"
-    },
-    "faculty/*.php": {
-      "runtime": "vercel-php@0.7.2"
-    },
-    "student/*.php": {
-      "runtime": "vercel-php@0.7.2"
-    }
-  },
+  "cleanUrls": true,
   "routes": [
+    {
+      "src": "^/login(?:\\.php)?/?$",
+      "dest": "/login.html"
+    },
+    {
+      "src": "^/register(?:\\.php)?/?$",
+      "dest": "/login.html"
+    },
+    {
+      "src": "^/(css|js)/(.*)",
+      "dest": "/$1/$2"
+    },
     {
       "src": "^/$",
       "dest": "/index.html"
-    },
-    {
-      "src": "^/login/?$",
-      "dest": "/login.php"
-    },
-    {
-      "src": "^/logout/?$",
-      "dest": "/logout.php"
-    },
-    {
-      "src": "^/register/?$",
-      "dest": "/register.php"
-    },
-    {
-      "src": "^/(.*\\.php)$",
-      "dest": "/$1"
-    },
-    {
-      "src": "^/(css|js|uploads|fpdf)/(.*)",
-      "dest": "/$1/$2"
     },
     {
       "src": "^/(.*)",

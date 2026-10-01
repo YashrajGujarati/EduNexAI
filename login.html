@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connecting to EduNexAI Login...</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <script src="js/config.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 20px;
+        }
+        .redirect-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .spinner {
+            font-size: 2.5rem;
+            color: #6366f1;
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        h2 { font-size: 1.4rem; margin-bottom: 12px; font-weight: 700; }
+        p { color: #94a3b8; font-size: 0.95rem; line-height: 1.5; margin-bottom: 24px; }
+        .btn-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            background: #4f46e5;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .btn-home:hover { background: #4338ca; }
+        .notice-box {
+            display: none;
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            color: #fca5a5;
+            font-size: 0.88rem;
+            text-align: left;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="redirect-card">
+        <div class="spinner" id="spinnerIcon"><i class="fas fa-circle-notch"></i></div>
+        <h2 id="redirectTitle">Connecting to EduNexAI Portal...</h2>
+        <p id="redirectDesc">Redirecting to your secure PHP application on Railway.</p>
+        
+        <div id="configNotice" class="notice-box">
+            <strong><i class="fas fa-triangle-exclamation me-1"></i> Backend URL Required:</strong><br>
+            The static frontend on Vercel needs your Railway backend URL to execute PHP.<br><br>
+            Please set <code>BACKEND_URL</code> in <code>js/config.js</code> or run:<br>
+            <code style="word-break: break-all; color:#93c5fd;">localStorage.setItem('EDUNEX_BACKEND_URL', 'https://your-railway-app.up.railway.app')</code>
+        </div>
+
+        <div>
+            <a href="index.html" class="btn-home"><i class="fas fa-arrow-left"></i> Return to Homepage</a>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            var backendUrl = (window.EDUNEX_CONFIG && window.EDUNEX_CONFIG.BACKEND_URL) ? window.EDUNEX_CONFIG.BACKEND_URL : '';
+            var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+            if (backendUrl) {
+                window.location.replace(window.EDUNEX_CONFIG.getApiUrl('login.php'));
+            } else if (isLocal) {
+                window.location.replace('login.php');
+            } else {
+                document.getElementById('spinnerIcon').style.display = 'none';
+                document.getElementById('redirectTitle').innerText = 'Railway Backend URL Required';
+                document.getElementById('redirectDesc').innerText = 'EduNexAI is deployed on Vercel, but the Railway PHP backend URL is not configured yet.';
+                document.getElementById('configNotice').style.display = 'block';
+            }
+        })();
+    </script>
+</body>
+</html>

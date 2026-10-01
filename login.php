@@ -1,5 +1,8 @@
 <?php
-session_start();
+require_once(__DIR__ . '/config/cors.php');
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once(__DIR__ . '/config/db.php');
 
 $error_msg = "";
@@ -10,10 +13,25 @@ if (isset($_SESSION['register_success'])) {
     unset($_SESSION['register_success']);
 }
 
-if(isset($_POST['login']))
+// Detect JSON / AJAX request
+$is_json_request = (
+    (isset($_SERVER['CONTENT_TYPE']) && stripos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) ||
+    (isset($_SERVER['HTTP_ACCEPT']) && stripos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) ||
+    (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+);
+
+if ($is_json_request && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $raw_input = file_get_contents('php://input');
+    $json_data = json_decode($raw_input, true);
+    if (is_array($json_data)) {
+        $_POST = array_merge($_POST, $json_data);
+    }
+}
+
+if(isset($_POST['login']) || ($is_json_request && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_id'])))
 {
-    $login_id = mysqli_real_escape_string($conn, $_POST['login_id']);
-    $password = $_POST['password'];
+    $login_id = mysqli_real_escape_string($conn, $_POST['login_id'] ?? '');
+    $password = $_POST['password'] ?? '';
 
     $query = "SELECT * FROM users
               WHERE email='$login_id'
@@ -21,7 +39,7 @@ if(isset($_POST['login']))
 
     $result = mysqli_query($conn, $query);
 
-    if(mysqli_num_rows($result) == 1)
+    if($result && mysqli_num_rows($result) == 1)
     {
         $row = mysqli_fetch_assoc($result);
 
@@ -33,29 +51,44 @@ if(isset($_POST['login']))
             $_SESSION['username'] = $row['name'];
             $_SESSION['role'] = $row['role'];
 
+            $redirect_url = "";
             if($row['role'] == "admin")
             {
-                header("Location: admin/dashboard.php");
-                exit();
+                $redirect_url = "admin/dashboard.php";
             }
             elseif($row['role'] == "faculty")
             {
-                header("Location: faculty/dashboard.php");
-                exit();
+                $redirect_url = "faculty/dashboard.php";
             }
             else
             {
-                if($row['first_login'] == 1)
+                if(isset($row['first_login']) && $row['first_login'] == 1)
                 {
-                    header("Location: student/change_password.php");
-                    exit();
+                    $redirect_url = "student/change_password.php";
                 }
                 else
                 {
-                    header("Location: student/dashboard.php");
-                    exit();
+                    $redirect_url = "student/dashboard.php";
                 }
             }
+
+            if ($is_json_request) {
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode([
+                    'success' => true,
+                    'role' => $row['role'],
+                    'redirect' => $redirect_url,
+                    'user' => [
+                        'id' => $row['id'],
+                        'name' => $row['name'],
+                        'role' => $row['role']
+                    ]
+                ]);
+                exit();
+            }
+
+            header("Location: " . $redirect_url);
+            exit();
         }
         else
         {
@@ -66,7 +99,18 @@ if(isset($_POST['login']))
     {
         $error_msg = "Invalid Login ID or Email. User account not found.";
     }
+
+    if ($is_json_request && !empty($error_msg)) {
+        http_response_code(401);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'success' => false,
+            'error' => $error_msg
+        ]);
+        exit();
+    }
 }
+$frontend_url = getenv('FRONTEND_URL') ?: 'index.html';
 ?>
 
 <!DOCTYPE html>
@@ -230,7 +274,7 @@ if(isset($_POST['login']))
                         Don't have an account? <a href="register.php">Create Account</a>
                     </p>
                     <p class="mb-0">
-                        <a href="index.html" class="text-muted">
+                        <a href="<?php echo htmlspecialchars($frontend_url); ?>" class="text-muted">
                             <i class="fa-solid fa-arrow-left me-1"></i>Back to Home
                         </a>
                     </p>

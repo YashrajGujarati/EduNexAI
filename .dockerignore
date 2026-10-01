@@ -4,3 +4,6 @@
 .agents
 docker-compose.yml
 README_DOCKER.md
+.env
+.env.*
+!.env.example

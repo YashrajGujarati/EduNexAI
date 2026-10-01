@@ -1,0 +1,20 @@
+# Ignore all backend PHP files, scripts, and server infrastructure from Vercel static deployment
+*.php
+admin/
+faculty/
+student/
+config/
+database/
+python/
+vendor/
+fpdf/
+Dockerfile
+docker-entrypoint.sh
+railway.json
+nixpacks.toml
+composer.json
+composer.lock
+package.json
+.env*
+*.sql
+*.md

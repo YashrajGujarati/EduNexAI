@@ -1,6 +1,10 @@
 <?php
-session_start();
+require_once(__DIR__ . '/config/cors.php');
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once(__DIR__ . '/config/db.php');
+$frontend_url = getenv('FRONTEND_URL') ?: 'index.html';
 
 $error_msg = "";
 $success_msg = "";
@@ -259,7 +263,7 @@ if(isset($_POST['register']))
                         Already registered? <a href="login.php">Sign in to EduNexAI</a>
                     </p>
                     <p class="mb-0">
-                        <a href="index.html" class="text-muted">
+                        <a href="<?php echo htmlspecialchars($frontend_url); ?>" class="text-muted">
                             <i class="fa-solid fa-arrow-left me-1"></i>Back to Home
                         </a>
                     </p>

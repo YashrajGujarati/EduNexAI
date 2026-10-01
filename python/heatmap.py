@@ -6,12 +6,9 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-conn = mysql.connector.connect(
-    host=os.getenv('DB_HOST', 'localhost'),
-    user=os.getenv('DB_USER', 'root'),
-    password=os.getenv('DB_PASSWORD', ''),
-    database=os.getenv('DB_NAME', 'student_ai_system')
-)
+from db_config import get_connection
+
+conn = get_connection()
 
 query = """
 SELECT

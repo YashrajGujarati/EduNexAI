@@ -45,10 +45,14 @@ COPY . /var/www/html/
 RUN if [ -f "composer.json" ]; then composer install --no-dev --optimize-autoloader; fi
 
 # Create output and upload directories with write permissions
-RUN mkdir -p /var/www/html/python/output /var/www/html/uploads \
+RUN mkdir -p /var/www/html/python/output /var/www/html/uploads/assignments /var/www/html/uploads/submissions \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/python/output /var/www/html/uploads
 
+# Copy and setup entrypoint script for Railway PORT binding
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+CMD ["docker-entrypoint.sh"]
