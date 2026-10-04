@@ -16,6 +16,10 @@
       "dest": "/login.html"
     },
     {
+      "src": "^/register/?$",
+      "dest": "/login.html"
+    },
+    {
       "src": "^/$",
       "dest": "/index.html"
     },

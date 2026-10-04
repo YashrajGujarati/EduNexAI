@@ -1,7 +1,11 @@
-# Vercel static deployment — only index.html, login.html, css/, js/ are served
-# All backend PHP, Python, and server files are excluded
+# ============================================================
+# EduNexAI — Vercel Static Deployment Ignore Rules
+#
+# Vercel serves ONLY: index.html, login.html, css/, js/
+# All PHP/Python backend files stay on Railway (Docker).
+# ============================================================
 
-# PHP backend files
+# ── PHP backend files (run on Railway, not Vercel) ─────────
 *.php
 admin/
 faculty/
@@ -10,24 +14,34 @@ config/
 database/
 includes/
 
-# Python analytics (server-side only)
+# ── Python analytics (server-side only) ────────────────────
 python/
 
-# Dependencies and build tools
+# ── PHP/Composer dependencies ──────────────────────────────
 vendor/
 fpdf/
 composer.json
 composer.lock
-package.json
+
+# ── Node dependencies (not needed for static deploy) ───────
 node_modules/
+package.json
+package-lock.json
 
-# Environment & secrets
+# ── Docker / Railway deployment files ──────────────────────
+# NOTE: These are needed by Railway but not by Vercel
+Dockerfile
+docker-entrypoint.sh
+railway.json
+
+# ── Secrets — NEVER deploy to Vercel ───────────────────────
 .env
-.env.*
+.env.local
+.env.production
+.env.development
 
-# Database files
+# ── Database dumps ─────────────────────────────────────────
 *.sql
-*.json.bak
 
-# Docs and server config
+# ── Docs ───────────────────────────────────────────────────
 *.md

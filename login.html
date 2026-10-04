@@ -3,11 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduNexAI — Login</title>
+    <title>EduNexAI | Login</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <!-- Load env.js FIRST to set window.__EDUNEX_BACKEND_URL__ -->
+    <script src="js/env.js"></script>
+    <!-- Then load config.js to resolve BACKEND_URL -->
+    <script src="js/config.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -29,43 +33,42 @@
             max-width: 480px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
         }
-        .icon {
-            font-size: 3rem;
-            margin-bottom: 20px;
+        .spinner-icon {
+            font-size: 2.8rem;
+            margin-bottom: 18px;
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        h2 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, #e2e8f0, #a5b4fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        p {
-            color: #94a3b8;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 28px;
-        }
-        .info-box {
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.3);
+        .spin { animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 10px; }
+        p { color: #94a3b8; font-size: 0.93rem; line-height: 1.6; margin-bottom: 24px; }
+        .alert-box {
+            display: none;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.35);
             border-radius: 10px;
             padding: 16px 20px;
-            margin-bottom: 28px;
-            color: #a5b4fc;
-            font-size: 0.88rem;
+            margin-bottom: 20px;
+            color: #fca5a5;
+            font-size: 0.875rem;
             text-align: left;
             line-height: 1.6;
         }
-        .info-box i { margin-right: 6px; }
+        .alert-box code {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: #93c5fd;
+            word-break: break-all;
+            background: rgba(0,0,0,0.3);
+            padding: 6px 10px;
+            border-radius: 6px;
+        }
         .btn-home {
             display: inline-flex;
             align-items: center;
@@ -76,45 +79,64 @@
             text-decoration: none;
             border-radius: 10px;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.93rem;
             transition: all 0.2s;
-            box-shadow: 0 4px 15px rgba(99,102,241,0.4);
+            box-shadow: 0 4px 15px rgba(99,102,241,0.35);
         }
-        .btn-home:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(99,102,241,0.5);
-            color: #fff;
-        }
-        .badge {
-            display: inline-block;
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.4);
-            color: #34d399;
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            letter-spacing: 0.05em;
-        }
+        .btn-home:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99,102,241,0.5); color: #fff; }
     </style>
 </head>
 <body>
     <div class="card">
-        <div class="icon"><i class="fas fa-graduation-cap"></i></div>
-        <span class="badge"><i class="fas fa-circle-dot"></i> EduNexAI Portal</span>
-        <h2>Student &amp; Faculty Login</h2>
-        <p>EduNexAI is a full-stack PHP + MongoDB application. The login and dashboard features run on a PHP server.</p>
+        <div class="spinner-icon">
+            <i class="fas fa-circle-notch spin" id="spinnerEl"></i>
+        </div>
+        <h2 id="cardTitle">Connecting to EduNexAI...</h2>
+        <p id="cardDesc">Redirecting to your secure login portal.</p>
 
-        <div class="info-box">
-            <i class="fas fa-circle-info"></i>
-            <strong>Demo Access:</strong> This is the static preview hosted on Vercel.<br>
-            The full application with login, dashboards, and AI analytics requires a PHP backend server.
+        <div class="alert-box" id="alertBox">
+            <strong><i class="fas fa-triangle-exclamation"></i> Backend URL Not Configured</strong><br>
+            Open <strong>js/env.js</strong> and set your Railway URL:<br>
+            <code>window.__EDUNEX_BACKEND_URL__ = 'https://your-app.up.railway.app';</code>
+            <br><br>
+            Or paste this in your browser console to test:<br>
+            <code>localStorage.setItem('EDUNEX_BACKEND_URL', 'https://your-app.up.railway.app');</code>
         </div>
 
-        <a href="index.html" class="btn-home">
+        <a href="index.html" class="btn-home" id="homeBtn" style="display:none;">
             <i class="fas fa-arrow-left"></i> Back to Homepage
         </a>
     </div>
+
+    <script>
+        (function () {
+            var isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+            // On localhost → go directly to login.php
+            if (isLocalhost) {
+                window.location.replace('login.php');
+                return;
+            }
+
+            // In production (Vercel) → get backend URL from config
+            var backendUrl = '';
+            if (window.EDUNEX_CONFIG && window.EDUNEX_CONFIG.BACKEND_URL) {
+                backendUrl = window.EDUNEX_CONFIG.BACKEND_URL;
+            }
+
+            if (backendUrl && backendUrl !== '__RAILWAY_URL__' && backendUrl !== '') {
+                // Redirect to Railway backend login.php
+                window.location.replace(backendUrl + '/login.php');
+            } else {
+                // Backend URL not configured — show instructions
+                document.getElementById('spinnerEl').className = 'fas fa-triangle-exclamation';
+                document.getElementById('spinnerEl').style.cssText = 'color:#f59e0b; -webkit-text-fill-color:#f59e0b;';
+                document.getElementById('cardTitle').textContent = 'Backend URL Required';
+                document.getElementById('cardDesc').textContent = 'EduNexAI needs your Railway backend URL to show the login page.';
+                document.getElementById('alertBox').style.display = 'block';
+                document.getElementById('homeBtn').style.display = 'inline-flex';
+            }
+        })();
+    </script>
 </body>
 </html>
