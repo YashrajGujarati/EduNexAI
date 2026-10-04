@@ -12,17 +12,17 @@
 
     $user_id = $_SESSION['user_id'];
 
-    $getStudent = mysqli_query($conn,
+    $getStudent = db_query($conn,
 
     "SELECT student_id
     FROM students
     WHERE user_id='$user_id'");
 
-    $row = mysqli_fetch_assoc($getStudent);
+    $row = db_fetch_assoc($getStudent);
 
     $student_id = $row['student_id'];
 
-    $query = mysqli_query($conn,
+    $query = db_query($conn,
 
     "SELECT *
     FROM attendance
@@ -72,7 +72,7 @@
 
             <?php
 
-            while($data = mysqli_fetch_assoc($query))
+            while($data = db_fetch_assoc($query))
             {
 
             ?>

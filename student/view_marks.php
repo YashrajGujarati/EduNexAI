@@ -12,18 +12,18 @@ require_once(__DIR__ . '/../config/db.php');
 
 $user_id = $_SESSION['user_id'];
 
-$studentQuery = mysqli_query(
+$studentQuery = db_query(
     $conn,
     "SELECT student_id
      FROM students
      WHERE user_id='$user_id'"
 );
 
-$student = mysqli_fetch_assoc($studentQuery);
+$student = db_fetch_assoc($studentQuery);
 
 $student_id = $student['student_id'];
 
-$marksQuery = mysqli_query(
+$marksQuery = db_query(
     $conn,
 
     "SELECT
@@ -81,7 +81,7 @@ rel="stylesheet">
 
 <?php
 
-while($row = mysqli_fetch_assoc($marksQuery))
+while($row = db_fetch_assoc($marksQuery))
 {
 
 ?>

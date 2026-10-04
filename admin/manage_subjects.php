@@ -15,7 +15,7 @@ LEFT JOIN users ON subjects.faculty_id = users.id
 ORDER BY subjects.subject_id ASC
 ";
 
-$result = mysqli_query($conn, $query);
+$result = db_query($conn, $query);
 $page_title = "Manage Subjects";
 ?>
 <!DOCTYPE html>
@@ -60,8 +60,8 @@ $page_title = "Manage Subjects";
                             </tr>
                         </thead>
                         <tbody>
-                        <?php if(mysqli_num_rows($result) > 0) {
-                            while($row = mysqli_fetch_assoc($result)) {
+                        <?php if(db_num_rows($result) > 0) {
+                            while($row = db_fetch_assoc($result)) {
                                 $fac_name = !empty($row['faculty_name']) ? $row['faculty_name'] : 'Not Assigned';
                         ?>
                             <tr>

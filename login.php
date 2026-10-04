@@ -30,18 +30,18 @@ if ($is_json_request && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
 if(isset($_POST['login']) || ($is_json_request && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_id'])))
 {
-    $login_id = mysqli_real_escape_string($conn, $_POST['login_id'] ?? '');
+    $login_id = db_real_escape_string($conn, $_POST['login_id'] ?? '');
     $password = $_POST['password'] ?? '';
 
     $query = "SELECT * FROM users
               WHERE email='$login_id'
               OR enrollment_no='$login_id'";
 
-    $result = mysqli_query($conn, $query);
+    $result = db_query($conn, $query);
 
-    if($result && mysqli_num_rows($result) == 1)
+    if($result && db_num_rows($result) == 1)
     {
-        $row = mysqli_fetch_assoc($result);
+        $row = db_fetch_assoc($result);
 
         if(password_verify($password, $row['password']) || $password === $row['password'])
         {
@@ -289,4 +289,4 @@ $frontend_url = getenv('FRONTEND_URL') ?: 'index.html';
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/login.js?v=<?php echo time(); ?>"></script>
 </body>
-</html>
+</html>

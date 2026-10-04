@@ -16,7 +16,7 @@ $id = intval($_GET['id']);
 /* User Delete Query */
 $query = "DELETE FROM users WHERE id='$id'";
 
-if(mysqli_query($conn, $query))
+if(db_query($conn, $query))
 {
     echo "<script>
 

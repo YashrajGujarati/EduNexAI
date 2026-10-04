@@ -10,7 +10,7 @@ require_once(__DIR__ . '/../config/db.php');
 
 $user_id = $_SESSION['user_id'];
 
-$query = mysqli_query($conn, "
+$query = db_query($conn, "
 SELECT
 users.name,
 students.attendance,
@@ -22,7 +22,7 @@ WHERE users.id = '$user_id'
 GROUP BY users.id
 ");
 
-$data = mysqli_fetch_assoc($query);
+$data = db_fetch_assoc($query);
 
 $attendance = isset($data['attendance']) ? (float)$data['attendance'] : 0;
 $marks = isset($data['avg_marks']) ? round($data['avg_marks']) : 0;
@@ -56,26 +56,26 @@ if ($prediction === 'Excellent') {
 }
 
 /* GET STUDENT ID */
-$student_query = mysqli_query($conn, "SELECT student_id FROM students WHERE user_id = '$user_id'");
-$student = mysqli_fetch_assoc($student_query);
+$student_query = db_query($conn, "SELECT student_id FROM students WHERE user_id = '$user_id'");
+$student = db_fetch_assoc($student_query);
 $student_id = $student['student_id'] ?? 0;
 
 /* SAVE TO PREDICTION HISTORY (Schema Adaptive) */
 if($student_id > 0) {
-    $check_col = @mysqli_query($conn, "SHOW COLUMNS FROM prediction_history LIKE 'prediction'");
-    if($check_col && mysqli_num_rows($check_col) > 0) {
-        $stmt = @mysqli_prepare($conn, "INSERT INTO prediction_history (student_id, attendance, marks, prediction) VALUES (?, ?, ?, ?)");
+    $check_col = @db_query($conn, "SHOW COLUMNS FROM prediction_history LIKE 'prediction'");
+    if($check_col && db_num_rows($check_col) > 0) {
+        $stmt = @db_prepare($conn, "INSERT INTO prediction_history (student_id, attendance, marks, prediction) VALUES (?, ?, ?, ?)");
         if($stmt) {
-            mysqli_stmt_bind_param($stmt, "idds", $student_id, $attendance, $marks, $prediction);
-            @mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
+            db_stmt_bind_param($stmt, "idds", $student_id, $attendance, $marks, $prediction);
+            @db_stmt_execute($stmt);
+            db_stmt_close($stmt);
         }
     } else {
-        $stmt = @mysqli_prepare($conn, "INSERT INTO prediction_history (student_id, predicted_score, result, risk_level) VALUES (?, ?, ?, ?)");
+        $stmt = @db_prepare($conn, "INSERT INTO prediction_history (student_id, predicted_score, result, risk_level) VALUES (?, ?, ?, ?)");
         if($stmt) {
-            mysqli_stmt_bind_param($stmt, "idss", $student_id, $marks, $prediction, $risk_level);
-            @mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
+            db_stmt_bind_param($stmt, "idss", $student_id, $marks, $prediction, $risk_level);
+            @db_stmt_execute($stmt);
+            db_stmt_close($stmt);
         }
     }
 }
@@ -165,4 +165,4 @@ $page_title = "AI Performance Prediction";
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+</html>

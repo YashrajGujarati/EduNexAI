@@ -26,8 +26,8 @@ if (!file_exists($upload_dir)) {
 ========================================================= */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_assignment'])) {
     $subject_id = (int)$_POST['subject_id'];
-    $title = trim(mysqli_real_escape_string($conn, $_POST['title']));
-    $description = trim(mysqli_real_escape_string($conn, $_POST['description']));
+    $title = trim(db_real_escape_string($conn, $_POST['title']));
+    $description = trim(db_real_escape_string($conn, $_POST['description']));
     $due_date = trim($_POST['due_date']);
     $total_marks = (int)($_POST['total_marks'] ?? 100);
 
@@ -56,17 +56,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_assignment']))
         $message = "Please fill in all required fields (Subject, Title, Due Date).";
         $message_type = "danger";
     } else if (empty($message)) {
-        $stmt = mysqli_prepare($conn, "INSERT INTO assignments (title, description, subject_id, faculty_id, due_date, total_marks, file_path) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        mysqli_stmt_bind_param($stmt, "ssiisis", $title, $description, $subject_id, $faculty_id, $due_date, $total_marks, $file_path);
+        $stmt = db_prepare($conn, "INSERT INTO assignments (title, description, subject_id, faculty_id, due_date, total_marks, file_path) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        db_stmt_bind_param($stmt, "ssiisis", $title, $description, $subject_id, $faculty_id, $due_date, $total_marks, $file_path);
 
-        if (mysqli_stmt_execute($stmt)) {
+        if (db_stmt_execute($stmt)) {
             $message = "Assignment created successfully! Students will be notified of the deadline.";
             $message_type = "success";
         } else {
-            $message = "Failed to create assignment: " . mysqli_error($conn);
+            $message = "Failed to create assignment: " . db_error($conn);
             $message_type = "danger";
         }
-        mysqli_stmt_close($stmt);
+        db_stmt_close($stmt);
     }
 }
 
@@ -77,13 +77,13 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     $del_id = (int)$_GET['id'];
 
     // Check ownership
-    $check = mysqli_query($conn, "SELECT file_path FROM assignments WHERE assignment_id = $del_id AND faculty_id = $faculty_id");
-    if ($check && mysqli_num_rows($check) > 0) {
-        $row = mysqli_fetch_assoc($check);
+    $check = db_query($conn, "SELECT file_path FROM assignments WHERE assignment_id = $del_id AND faculty_id = $faculty_id");
+    if ($check && db_num_rows($check) > 0) {
+        $row = db_fetch_assoc($check);
         if (!empty($row['file_path']) && file_exists("../" . $row['file_path'])) {
             @unlink("../" . $row['file_path']);
         }
-        mysqli_query($conn, "DELETE FROM assignments WHERE assignment_id = $del_id");
+        db_query($conn, "DELETE FROM assignments WHERE assignment_id = $del_id");
         $message = "Assignment deleted successfully.";
         $message_type = "success";
     }
@@ -95,33 +95,33 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['grade_submission'])) {
     $submission_id = (int)$_POST['submission_id'];
     $marks_obtained = (int)$_POST['marks_obtained'];
-    $feedback = trim(mysqli_real_escape_string($conn, $_POST['feedback']));
+    $feedback = trim(db_real_escape_string($conn, $_POST['feedback']));
 
-    $update_stmt = mysqli_prepare($conn, "UPDATE assignment_submissions SET marks_obtained = ?, feedback = ?, status = 'graded' WHERE submission_id = ?");
-    mysqli_stmt_bind_param($update_stmt, "isi", $marks_obtained, $feedback, $submission_id);
-    if (mysqli_stmt_execute($update_stmt)) {
+    $update_stmt = db_prepare($conn, "UPDATE assignment_submissions SET marks_obtained = ?, feedback = ?, status = 'graded' WHERE submission_id = ?");
+    db_stmt_bind_param($update_stmt, "isi", $marks_obtained, $feedback, $submission_id);
+    if (db_stmt_execute($update_stmt)) {
         $message = "Grade and feedback saved successfully!";
         $message_type = "success";
     } else {
-        $message = "Error saving grade: " . mysqli_error($conn);
+        $message = "Error saving grade: " . db_error($conn);
         $message_type = "danger";
     }
-    mysqli_stmt_close($update_stmt);
+    db_stmt_close($update_stmt);
 }
 
 /* =========================================================
    FETCH FACULTY SUBJECTS
 ========================================================= */
-$subject_query = mysqli_query($conn, "SELECT subject_id, subject_name, subject_code FROM subjects WHERE faculty_id = $faculty_id ORDER BY subject_name ASC");
+$subject_query = db_query($conn, "SELECT subject_id, subject_name, subject_code FROM subjects WHERE faculty_id = $faculty_id ORDER BY subject_name ASC");
 $faculty_subjects = [];
-while ($sub = mysqli_fetch_assoc($subject_query)) {
+while ($sub = db_fetch_assoc($subject_query)) {
     $faculty_subjects[] = $sub;
 }
 
 /* =========================================================
    FETCH FACULTY ASSIGNMENTS
 ========================================================= */
-$assignments_query = mysqli_query($conn, "
+$assignments_query = db_query($conn, "
     SELECT 
         a.*, 
         sub.subject_name, 
@@ -139,14 +139,14 @@ $submissions_list = [];
 
 if ($selected_assignment_id > 0) {
     // Fetch details of selected assignment
-    $val_query = mysqli_query($conn, "
+    $val_query = db_query($conn, "
         SELECT a.*, sub.subject_name, sub.subject_code 
         FROM assignments a 
         JOIN subjects sub ON a.subject_id = sub.subject_id 
         WHERE a.assignment_id = $selected_assignment_id AND a.faculty_id = $faculty_id
     ");
-    if ($val_query && mysqli_num_rows($val_query) > 0) {
-        $view_assignment = mysqli_fetch_assoc($val_query);
+    if ($val_query && db_num_rows($val_query) > 0) {
+        $view_assignment = db_fetch_assoc($val_query);
 
         // Fetch submissions from all students
         $sub_sql = "
@@ -169,8 +169,8 @@ if ($selected_assignment_id > 0) {
                 ON st.student_id = subm.student_id AND subm.assignment_id = $selected_assignment_id
             ORDER BY u.name ASC
         ";
-        $sub_res = mysqli_query($conn, $sub_sql);
-        while ($r = mysqli_fetch_assoc($sub_res)) {
+        $sub_res = db_query($conn, $sub_sql);
+        while ($r = db_fetch_assoc($sub_res)) {
             $submissions_list[] = $r;
         }
     }
@@ -391,7 +391,7 @@ $page_title = "Manage Assignments";
 
             <!-- List of Assignments -->
             <div class="row g-4">
-                <?php if (mysqli_num_rows($assignments_query) == 0): ?>
+                <?php if (db_num_rows($assignments_query) == 0): ?>
                     <div class="col-12">
                         <div class="card border-0 shadow-sm rounded-4 text-center py-5">
                             <div class="card-body">
@@ -407,7 +407,7 @@ $page_title = "Manage Assignments";
                         </div>
                     </div>
                 <?php else: ?>
-                    <?php while ($assign = mysqli_fetch_assoc($assignments_query)): ?>
+                    <?php while ($assign = db_fetch_assoc($assignments_query)): ?>
                         <?php 
                             $is_expired = (strtotime($assign['due_date']) < time());
                         ?>

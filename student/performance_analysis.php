@@ -23,16 +23,16 @@ $student_sql = "
     WHERE u.id = ?
     LIMIT 1
 ";
-$stmt = mysqli_prepare($conn, $student_sql);
-mysqli_stmt_bind_param($stmt, "i", $user_id);
-mysqli_stmt_execute($stmt);
-$student_result = mysqli_stmt_get_result($stmt);
+$stmt = db_prepare($conn, $student_sql);
+db_stmt_bind_param($stmt, "i", $user_id);
+db_stmt_execute($stmt);
+$student_result = db_stmt_get_result($stmt);
 
-if (!$student_result || mysqli_num_rows($student_result) == 0) {
+if (!$student_result || db_num_rows($student_result) == 0) {
     die("Student information not found.");
 }
-$student = mysqli_fetch_assoc($student_result);
-mysqli_stmt_close($stmt);
+$student = db_fetch_assoc($student_result);
+db_stmt_close($stmt);
 
 $student_id = (int)$student['student_id'];
 $attendance = (float)($student['attendance'] ?? 0);
@@ -48,21 +48,21 @@ $marks_sql = "
     INNER JOIN subjects sub ON m.subject_id = sub.subject_id
     WHERE m.student_id = ?
 ";
-$stmt = mysqli_prepare($conn, $marks_sql);
-mysqli_stmt_bind_param($stmt, "i", $student_id);
-mysqli_stmt_execute($stmt);
-$marks_result = mysqli_stmt_get_result($stmt);
+$stmt = db_prepare($conn, $marks_sql);
+db_stmt_bind_param($stmt, "i", $student_id);
+db_stmt_execute($stmt);
+$marks_result = db_stmt_get_result($stmt);
 
 $subject_marks = [];
 $total_marks_sum = 0;
 
 if ($marks_result) {
-    while ($row = mysqli_fetch_assoc($marks_result)) {
+    while ($row = db_fetch_assoc($marks_result)) {
         $subject_marks[] = $row;
         $total_marks_sum += (int)$row['total_marks'];
     }
 }
-mysqli_stmt_close($stmt);
+db_stmt_close($stmt);
 
 $subject_count = count($subject_marks);
 $average_marks = ($subject_count > 0) ? round($total_marks_sum / $subject_count) : 0;

@@ -9,7 +9,7 @@ if(!isset($_SESSION['user_id']) || $_SESSION['role'] != "student") {
 require_once(__DIR__ . '/../config/db.php');
 
 $user_id = $_SESSION['user_id'];
-$query = mysqli_query($conn, "
+$query = db_query($conn, "
 SELECT users.*, students.student_id, students.class, students.roll_number, students.attendance
 FROM users
 LEFT JOIN students ON users.id = students.user_id
@@ -17,7 +17,7 @@ WHERE users.id='$user_id'
 LIMIT 1
 ");
 
-$student = mysqli_fetch_assoc($query);
+$student = db_fetch_assoc($query);
 $attendance = (float)($student['attendance'] ?? 0);
 $page_title = "Student Profile";
 ?>

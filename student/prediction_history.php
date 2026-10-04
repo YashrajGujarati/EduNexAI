@@ -10,7 +10,7 @@ require_once(__DIR__ . '/../config/db.php');
 
 $user_id = $_SESSION['user_id'];
 
-$query = mysqli_query($conn, "
+$query = db_query($conn, "
 SELECT
 prediction_history.*
 FROM prediction_history
@@ -64,8 +64,8 @@ $page_title = "Prediction History";
                             </tr>
                         </thead>
                         <tbody>
-                        <?php if($query && mysqli_num_rows($query) > 0) {
-                            while ($row = mysqli_fetch_assoc($query)) {
+                        <?php if($query && db_num_rows($query) > 0) {
+                            while ($row = db_fetch_assoc($query)) {
                                 $res = !empty($row['result']) ? $row['result'] : ($row['prediction'] ?? 'N/A');
                                 $score = isset($row['predicted_score']) ? $row['predicted_score'] : ($row['marks'] ?? 'N/A');
                                 $att = isset($row['attendance']) ? number_format((float)$row['attendance'], 1).'%' : 'N/A';

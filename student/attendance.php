@@ -9,12 +9,12 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== "student") {
 require_once(__DIR__ . '/../config/db.php');
 
 $user_id = $_SESSION['user_id'];
-$query = mysqli_query($conn, "SELECT student_id, attendance FROM students WHERE user_id='$user_id'");
-$student = mysqli_fetch_assoc($query);
+$query = db_query($conn, "SELECT student_id, attendance FROM students WHERE user_id='$user_id'");
+$student = db_fetch_assoc($query);
 $student_id = $student['student_id'] ?? 0;
 $overall_att = (float)($student['attendance'] ?? 0);
 
-$attendance_query = mysqli_query($conn, "
+$attendance_query = db_query($conn, "
     SELECT attendance.*, subjects.subject_name
     FROM attendance
     LEFT JOIN subjects ON attendance.subject_id = subjects.subject_id
@@ -79,8 +79,8 @@ $page_title = "My Attendance Records";
                             </tr>
                         </thead>
                         <tbody>
-                        <?php if ($attendance_query && mysqli_num_rows($attendance_query) > 0): ?>
-                            <?php while ($row = mysqli_fetch_assoc($attendance_query)): 
+                        <?php if ($attendance_query && db_num_rows($attendance_query) > 0): ?>
+                            <?php while ($row = db_fetch_assoc($attendance_query)): 
                                 $p_days = (int)($row['present_days'] ?? 0);
                                 $t_days = (int)($row['total_days'] ?? 100);
                                 $pct = (float)($row['percentage'] ?? 0);

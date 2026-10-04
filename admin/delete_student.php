@@ -14,7 +14,7 @@ $id = intval($_GET['id']);
 
 $query = "DELETE FROM students WHERE student_id='$id'";
 
-if(mysqli_query($conn,$query))
+if(db_query($conn,$query))
 {
     echo "<script>
 

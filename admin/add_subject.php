@@ -11,17 +11,17 @@ if(!isset($_SESSION['user_id']) || $_SESSION['role'] != "admin")
 require_once(__DIR__ . '/../config/db.php');
 
 $faculty_query = "SELECT id,name FROM users WHERE role='faculty'";
-$faculty_result = mysqli_query($conn,$faculty_query);
+$faculty_result = db_query($conn,$faculty_query);
 
 if(isset($_POST['add_subject']))
 {
-    $subject_name = mysqli_real_escape_string($conn,$_POST['subject_name']);
+    $subject_name = db_real_escape_string($conn,$_POST['subject_name']);
     $faculty_id = $_POST['faculty_id'];
 
     $query = "INSERT INTO subjects(subject_name,faculty_id)
               VALUES('$subject_name','$faculty_id')";
 
-    if(mysqli_query($conn,$query))
+    if(db_query($conn,$query))
     {
         echo "<script>
 
@@ -129,7 +129,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 
                             </option>
 
-                            <?php while($row=mysqli_fetch_assoc($faculty_result)){ ?>
+                            <?php while($row=db_fetch_assoc($faculty_result)){ ?>
 
                             <option value="<?php echo $row['id']; ?>">
 

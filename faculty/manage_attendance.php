@@ -13,7 +13,7 @@ require_once(__DIR__ . '/../config/db.php');
 $faculty_id = (int)$_SESSION['user_id'];
 
 /* Ensure attendance_logs table exists for topic tracking */
-mysqli_query($conn, "
+db_query($conn, "
     CREATE TABLE IF NOT EXISTS attendance_logs (
         log_id INT AUTO_INCREMENT PRIMARY KEY,
         subject_id INT NOT NULL,
@@ -39,8 +39,8 @@ if (isset($_POST['save_attendance'])) {
     $topic = trim($_POST['topic'] ?? 'General Session');
 
     // Get subject name
-    $sub_name_res = mysqli_query($conn, "SELECT subject_name FROM subjects WHERE subject_id = '$sub_id'");
-    $sub_row = mysqli_fetch_assoc($sub_name_res);
+    $sub_name_res = db_query($conn, "SELECT subject_name FROM subjects WHERE subject_id = '$sub_id'");
+    $sub_row = db_fetch_assoc($sub_name_res);
     $sub_name = $sub_row['subject_name'] ?? 'Course';
 
     $present_count = 0;
@@ -60,42 +60,42 @@ if (isset($_POST['save_attendance'])) {
         $total_students_processed++;
 
         // Fetch existing attendance record
-        $check = mysqli_query($conn, "SELECT attendance_id, present_days, total_days FROM attendance WHERE student_id = '$student_id' AND subject_id = '$sub_id'");
-        if ($check && mysqli_num_rows($check) > 0) {
-            $att_row = mysqli_fetch_assoc($check);
+        $check = db_query($conn, "SELECT attendance_id, present_days, total_days FROM attendance WHERE student_id = '$student_id' AND subject_id = '$sub_id'");
+        if ($check && db_num_rows($check) > 0) {
+            $att_row = db_fetch_assoc($check);
             $att_id = $att_row['attendance_id'];
             $new_total = (int)$att_row['total_days'] + 1;
             $new_present = (int)$att_row['present_days'] + ($is_present ? 1 : 0);
             $pct = round(($new_present / $new_total) * 100, 2);
 
-            mysqli_query($conn, "UPDATE attendance SET present_days = '$new_present', total_days = '$new_total', percentage = '$pct' WHERE attendance_id = '$att_id'");
+            db_query($conn, "UPDATE attendance SET present_days = '$new_present', total_days = '$new_total', percentage = '$pct' WHERE attendance_id = '$att_id'");
         } else {
             $new_total = 1;
             $new_present = ($is_present ? 1 : 0);
             $pct = round(($new_present / $new_total) * 100, 2);
 
-            mysqli_query($conn, "INSERT INTO attendance (student_id, subject_id, present_days, total_days, percentage) VALUES ('$student_id', '$sub_id', '$new_present', '$new_total', '$pct')");
+            db_query($conn, "INSERT INTO attendance (student_id, subject_id, present_days, total_days, percentage) VALUES ('$student_id', '$sub_id', '$new_present', '$new_total', '$pct')");
         }
 
         // Recalculate student overall attendance percentage across all subjects
-        $avg_query = mysqli_query($conn, "SELECT AVG(percentage) as avg_pct FROM attendance WHERE student_id = '$student_id'");
-        $avg_row = mysqli_fetch_assoc($avg_query);
+        $avg_query = db_query($conn, "SELECT AVG(percentage) as avg_pct FROM attendance WHERE student_id = '$student_id'");
+        $avg_row = db_fetch_assoc($avg_query);
         $overall_pct = round((float)($avg_row['avg_pct'] ?? $pct), 2);
-        mysqli_query($conn, "UPDATE students SET attendance = '$overall_pct' WHERE student_id = '$student_id'");
+        db_query($conn, "UPDATE students SET attendance = '$overall_pct' WHERE student_id = '$student_id'");
     }
 
     // Log attendance session details
-    mysqli_query($conn, "INSERT INTO attendance_logs (subject_id, faculty_id, topic, attendance_date, total_students, present_count, absent_count) VALUES ('$sub_id', '$faculty_id', '" . mysqli_real_escape_string($conn, $topic) . "', NOW(), '$total_students_processed', '$present_count', '$absent_count')");
+    db_query($conn, "INSERT INTO attendance_logs (subject_id, faculty_id, topic, attendance_date, total_students, present_count, absent_count) VALUES ('$sub_id', '$faculty_id', '" . db_real_escape_string($conn, $topic) . "', NOW(), '$total_students_processed', '$present_count', '$absent_count')");
 
     $message = "Attendance saved successfully for <strong>" . htmlspecialchars($sub_name) . "</strong>" . ($topic ? " – <em>" . htmlspecialchars($topic) . "</em>" : "") . "! (" . $present_count . " Present, " . $absent_count . " Absent)";
     $message_type = "success";
 }
 
 /* Faculty Subjects */
-$subject_query = mysqli_query($conn, "SELECT subject_id, subject_name FROM subjects WHERE faculty_id = '$faculty_id' ORDER BY subject_name ASC");
+$subject_query = db_query($conn, "SELECT subject_id, subject_name FROM subjects WHERE faculty_id = '$faculty_id' ORDER BY subject_name ASC");
 $subjects_list = [];
 if ($subject_query) {
-    while ($s = mysqli_fetch_assoc($subject_query)) {
+    while ($s = db_fetch_assoc($subject_query)) {
         $subjects_list[] = $s;
     }
 }
@@ -111,7 +111,7 @@ if ($selected_subject > 0) {
         }
     }
 
-    $stu_query = mysqli_query($conn, "
+    $stu_query = db_query($conn, "
         SELECT
             s.student_id,
             u.name,
@@ -127,7 +127,7 @@ if ($selected_subject > 0) {
         ORDER BY CAST(s.roll_number AS UNSIGNED) ASC, u.name ASC
     ");
     if ($stu_query) {
-        while ($row = mysqli_fetch_assoc($stu_query)) {
+        while ($row = db_fetch_assoc($stu_query)) {
             $students[] = $row;
         }
     }

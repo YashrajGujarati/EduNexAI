@@ -9,7 +9,7 @@ if(!isset($_SESSION['user_id']) || $_SESSION['role'] != "admin"){
 require_once(__DIR__ . '/../config/db.php');
 
 $query = "SELECT * FROM users ORDER BY id ASC";
-$result = mysqli_query($conn, $query);
+$result = db_query($conn, $query);
 $page_title = "Manage Users";
 ?>
 <!DOCTYPE html>
@@ -56,8 +56,8 @@ $page_title = "Manage Users";
                         </thead>
                         <tbody>
                             <?php 
-                            if(mysqli_num_rows($result) > 0) {
-                                while($row = mysqli_fetch_assoc($result)) {
+                            if(db_num_rows($result) > 0) {
+                                while($row = db_fetch_assoc($result)) {
                                     $role_badge = 'badge-info';
                                     if ($row['role'] == 'admin') $role_badge = 'badge-risk-high';
                                     elseif ($row['role'] == 'faculty') $role_badge = 'badge-warning';
@@ -109,4 +109,4 @@ $page_title = "Manage Users";
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+</html>

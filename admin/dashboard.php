@@ -19,9 +19,9 @@ require_once(__DIR__ . '/../config/db.php');
 ========================================================= */
 $total_students = 0;
 $query_students = "SELECT COUNT(*) AS total FROM students";
-$result_students = mysqli_query($conn, $query_students);
+$result_students = db_query($conn, $query_students);
 if ($result_students) {
-    $row_students = mysqli_fetch_assoc($result_students);
+    $row_students = db_fetch_assoc($result_students);
     $total_students = (int)$row_students['total'];
 }
 
@@ -30,9 +30,9 @@ if ($result_students) {
 ========================================================= */
 $total_faculty = 0;
 $query_faculty = "SELECT COUNT(*) AS total FROM users WHERE role = 'faculty'";
-$result_faculty = mysqli_query($conn, $query_faculty);
+$result_faculty = db_query($conn, $query_faculty);
 if ($result_faculty) {
-    $row_faculty = mysqli_fetch_assoc($result_faculty);
+    $row_faculty = db_fetch_assoc($result_faculty);
     $total_faculty = (int)$row_faculty['total'];
 }
 
@@ -41,9 +41,9 @@ if ($result_faculty) {
 ========================================================= */
 $total_subjects = 0;
 $query_subjects = "SELECT COUNT(*) AS total FROM subjects";
-$result_subjects = mysqli_query($conn, $query_subjects);
+$result_subjects = db_query($conn, $query_subjects);
 if ($result_subjects) {
-    $row_subjects = mysqli_fetch_assoc($result_subjects);
+    $row_subjects = db_fetch_assoc($result_subjects);
     $total_subjects = (int)$row_subjects['total'];
 }
 
@@ -52,9 +52,9 @@ if ($result_subjects) {
 ========================================================= */
 $total_predictions = 0;
 $query_predictions = "SELECT COUNT(*) AS total FROM prediction_history";
-$result_predictions = @mysqli_query($conn, $query_predictions);
+$result_predictions = @db_query($conn, $query_predictions);
 if ($result_predictions) {
-    $row_predictions = mysqli_fetch_assoc($result_predictions);
+    $row_predictions = db_fetch_assoc($result_predictions);
     $total_predictions = (int)$row_predictions['total'];
 }
 
@@ -74,9 +74,9 @@ $query_recent_students = "
     ORDER BY s.student_id DESC
     LIMIT 5
 ";
-$result_recent_students = mysqli_query($conn, $query_recent_students);
+$result_recent_students = db_query($conn, $query_recent_students);
 if ($result_recent_students) {
-    while ($row = mysqli_fetch_assoc($result_recent_students)) {
+    while ($row = db_fetch_assoc($result_recent_students)) {
         $students[] = $row;
     }
 }
@@ -100,9 +100,9 @@ $query_att_dist = "
         SUM(CASE WHEN attendance < 75 THEN 1 ELSE 0 END) AS low_count
     FROM students
 ";
-$result_att_dist = mysqli_query($conn, $query_att_dist);
+$result_att_dist = db_query($conn, $query_att_dist);
 if ($result_att_dist) {
-    $row_att = mysqli_fetch_assoc($result_att_dist);
+    $row_att = db_fetch_assoc($result_att_dist);
     $excellent_attendance = (int)($row_att['excellent_count'] ?? 0);
     $average_attendance = (int)($row_att['average_count'] ?? 0);
     $low_attendance = (int)($row_att['low_count'] ?? 0);

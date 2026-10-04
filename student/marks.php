@@ -10,19 +10,19 @@ require_once(__DIR__ . '/../config/db.php');
 $user_id = $_SESSION['user_id'];
 
 /* Get Student ID */
-$student_query = mysqli_query($conn, "SELECT student_id, class, roll_number FROM students WHERE user_id = '$user_id' LIMIT 1");
-if (!$student_query || mysqli_num_rows($student_query) == 0) {
+$student_query = db_query($conn, "SELECT student_id, class, roll_number FROM students WHERE user_id = '$user_id' LIMIT 1");
+if (!$student_query || db_num_rows($student_query) == 0) {
     die("Student record not found.");
 }
-$student = mysqli_fetch_assoc($student_query);
+$student = db_fetch_assoc($student_query);
 $student_id = $student['student_id'];
 
 /* Get User Info */
-$user_query = mysqli_query($conn, "SELECT name, email FROM users WHERE id = '$user_id' LIMIT 1");
-$user = mysqli_fetch_assoc($user_query);
+$user_query = db_query($conn, "SELECT name, email FROM users WHERE id = '$user_id' LIMIT 1");
+$user = db_fetch_assoc($user_query);
 
 /* Get Marks */
-$marks_query = mysqli_query($conn, "
+$marks_query = db_query($conn, "
     SELECT
         subjects.subject_name,
         marks.internal_marks,
@@ -40,7 +40,7 @@ $total_marks_sum = 0;
 $highest_marks = 0;
 
 if ($marks_query) {
-    while ($row = mysqli_fetch_assoc($marks_query)) {
+    while ($row = db_fetch_assoc($marks_query)) {
         $marks_data[] = $row;
         $t = (int)$row['total_marks'];
         $total_marks_sum += $t;

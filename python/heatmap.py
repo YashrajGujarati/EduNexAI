@@ -1,5 +1,4 @@
 import os
-import mysql.connector
 import pandas as pd
 import seaborn as sns
 import matplotlib
@@ -8,22 +7,37 @@ import matplotlib.pyplot as plt
 
 from db_config import get_connection
 
-conn = get_connection()
+db = get_connection()
 
-query = """
-SELECT
-users.name,
-students.attendance,
-AVG(marks.total_marks) AS marks
-FROM users
-INNER JOIN students
-ON users.id = students.user_id
-LEFT JOIN marks
-ON students.student_id = marks.student_id
-GROUP BY users.id
-"""
+pipeline = [
+    {
+        "$lookup": {
+            "from": "students",
+            "localField": "id",
+            "foreignField": "user_id",
+            "as": "student"
+        }
+    },
+    {"$unwind": "$student"},
+    {
+        "$lookup": {
+            "from": "marks",
+            "localField": "student.student_id",
+            "foreignField": "student_id",
+            "as": "marks_data"
+        }
+    },
+    {
+        "$project": {
+            "name": "$name",
+            "attendance": "$student.attendance",
+            "marks": {"$avg": "$marks_data.total_marks"}
+        }
+    }
+]
 
-df = pd.read_sql(query, conn)
+data = list(db.users.aggregate(pipeline))
+df = pd.DataFrame(data)
 
 plt.figure(figsize=(10, 6))
 
@@ -44,5 +58,3 @@ os.makedirs(output_dir, exist_ok=True)
 
 plt.savefig(os.path.join(output_dir, "heatmap.png"))
 plt.close()
-
-conn.close()

@@ -11,13 +11,13 @@ require_once(__DIR__ . '/../config/db.php');
 $id = intval($_GET['id']);
 
 $query = "SELECT * FROM users WHERE id='$id'";
-$result = mysqli_query($conn,$query);
+$result = db_query($conn,$query);
 
-$user = mysqli_fetch_assoc($result);
+$user = db_fetch_assoc($result);
 if(isset($_POST['update_user']))
 {
-    $name = mysqli_real_escape_string($conn, $_POST['name']);
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $name = db_real_escape_string($conn, $_POST['name']);
+    $email = db_real_escape_string($conn, $_POST['email']);
     $role = $_POST['role'];
 
     $update_query = "UPDATE users
@@ -27,7 +27,7 @@ if(isset($_POST['update_user']))
                      role='$role'
                      WHERE id='$id'";
 
-    if(mysqli_query($conn, $update_query))
+    if(db_query($conn, $update_query))
     {
         echo "<script>
         alert('User Updated Successfully');

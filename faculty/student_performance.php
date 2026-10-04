@@ -13,7 +13,7 @@ require_once(__DIR__ . '/../config/db.php');
 $faculty_id = (int)$_SESSION['user_id'];
 
 /* Fetch Student Performance Overview for Faculty's Subjects */
-$student_query = mysqli_query($conn, "
+$student_query = db_query($conn, "
     SELECT
         s.student_id,
         s.roll_number,
@@ -32,7 +32,7 @@ $student_query = mysqli_query($conn, "
 
 $students = [];
 if ($student_query) {
-    while ($row = mysqli_fetch_assoc($student_query)) {
+    while ($row = db_fetch_assoc($student_query)) {
         $students[] = $row;
     }
 }

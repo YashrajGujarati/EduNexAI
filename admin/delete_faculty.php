@@ -16,7 +16,7 @@ $query = "DELETE FROM users
           WHERE id='$id'
           AND role='faculty'";
 
-if(mysqli_query($conn,$query))
+if(db_query($conn,$query))
 {
     echo "<script>
 

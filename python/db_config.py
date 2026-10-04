@@ -1,26 +1,19 @@
 import os
-import mysql.connector
+import pymongo
+
+def get_mongo_client():
+    """
+    Creates and returns a MongoClient instance using MONGODB_URI or default localhost.
+    """
+    uri = os.getenv('MONGODB_URI') or os.getenv('MONGO_URL') or 'mongodb://localhost:27017'
+    return pymongo.MongoClient(uri)
 
 def get_connection():
     """
-    Establishes a MySQL connection using environment variables,
-    supporting both DB_* and Railway native MYSQL* variables.
+    Establishes a MongoDB connection using environment variables,
+    supporting MONGODB_URI and MONGODB_DATABASE.
+    Returns the MongoDB database instance.
     """
-    host = os.getenv('DB_HOST') or os.getenv('MYSQLHOST') or 'localhost'
-    user = os.getenv('DB_USER') or os.getenv('MYSQLUSER') or 'root'
-    password = os.getenv('DB_PASSWORD') or os.getenv('MYSQLPASSWORD') or ''
-    database = os.getenv('DB_NAME') or os.getenv('MYSQLDATABASE') or 'student_ai_system'
-    
-    port_str = os.getenv('DB_PORT') or os.getenv('MYSQLPORT') or '3306'
-    try:
-        port = int(port_str)
-    except ValueError:
-        port = 3306
-
-    return mysql.connector.connect(
-        host=host,
-        user=user,
-        password=password,
-        database=database,
-        port=port
-    )
+    client = get_mongo_client()
+    db_name = os.getenv('MONGODB_DATABASE') or os.getenv('DB_NAME') or 'student_ai_system'
+    return client[db_name]

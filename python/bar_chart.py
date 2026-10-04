@@ -1,5 +1,4 @@
 import os
-import mysql.connector
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -7,26 +6,35 @@ import seaborn as sns
 
 from db_config import get_connection
 
-conn = get_connection()
+db = get_connection()
 
-cursor = conn.cursor()
+pipeline = [
+    {
+        "$project": {
+            "prediction": {
+                "$ifNull": [
+                    "$result",
+                    {"$ifNull": ["$risk_level", "Average"]}
+                ]
+            }
+        }
+    },
+    {
+        "$group": {
+            "_id": "$prediction",
+            "count": {"$sum": 1}
+        }
+    }
+]
 
-query = """
-SELECT COALESCE(result, risk_level, 'Average') AS prediction, COUNT(*)
-FROM prediction_history
-GROUP BY COALESCE(result, risk_level, 'Average')
-"""
-
-cursor.execute(query)
-
-result = cursor.fetchall()
+results = list(db.prediction_history.aggregate(pipeline))
 
 labels = []
 values = []
 
-for row in result:
-    labels.append(row[0])
-    values.append(row[1])
+for row in results:
+    labels.append(row["_id"])
+    values.append(row["count"])
 
 sns.set_theme(style="whitegrid")
 
@@ -48,6 +56,3 @@ os.makedirs(output_dir, exist_ok=True)
 
 plt.savefig(os.path.join(output_dir, "bar_chart.png"))
 plt.close()
-
-cursor.close()
-conn.close()

@@ -1,0 +1,62 @@
+{
+    "assignment_submissions": {
+        "mysql_count": 4,
+        "mongo_count": 4,
+        "status": "OK"
+    },
+    "assignments": {
+        "mysql_count": 4,
+        "mongo_count": 4,
+        "status": "OK"
+    },
+    "attendance": {
+        "mysql_count": 16,
+        "mongo_count": 16,
+        "status": "OK"
+    },
+    "attendance_logs": {
+        "mysql_count": 0,
+        "mongo_count": 0,
+        "status": "OK"
+    },
+    "fee_payments": {
+        "mysql_count": 8,
+        "mongo_count": 8,
+        "status": "OK"
+    },
+    "marks": {
+        "mysql_count": 20,
+        "mongo_count": 20,
+        "status": "OK"
+    },
+    "prediction_history": {
+        "mysql_count": 19,
+        "mongo_count": 19,
+        "status": "OK"
+    },
+    "predictions": {
+        "mysql_count": 10,
+        "mongo_count": 10,
+        "status": "OK"
+    },
+    "student_fees": {
+        "mysql_count": 10,
+        "mongo_count": 10,
+        "status": "OK"
+    },
+    "students": {
+        "mysql_count": 10,
+        "mongo_count": 10,
+        "status": "OK"
+    },
+    "subjects": {
+        "mysql_count": 6,
+        "mongo_count": 6,
+        "status": "OK"
+    },
+    "users": {
+        "mysql_count": 14,
+        "mongo_count": 14,
+        "status": "OK"
+    }
+}

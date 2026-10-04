@@ -13,11 +13,11 @@ require_once(__DIR__ . '/../config/db.php');
 $user_id = (int)$_SESSION['user_id'];
 
 /* Get Student Info */
-$student_q = mysqli_query($conn, "SELECT student_id, class FROM students WHERE user_id = $user_id LIMIT 1");
-if (!$student_q || mysqli_num_rows($student_q) == 0) {
+$student_q = db_query($conn, "SELECT student_id, class FROM students WHERE user_id = $user_id LIMIT 1");
+if (!$student_q || db_num_rows($student_q) == 0) {
     die("Student profile not found.");
 }
-$student_info = mysqli_fetch_assoc($student_q);
+$student_info = db_fetch_assoc($student_q);
 $student_id = (int)$student_info['student_id'];
 
 $message = "";
@@ -34,12 +34,12 @@ if (!file_exists($upload_dir)) {
 ========================================================= */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_assignment'])) {
     $assignment_id = (int)$_POST['assignment_id'];
-    $submission_text = trim(mysqli_real_escape_string($conn, $_POST['submission_text']));
+    $submission_text = trim(db_real_escape_string($conn, $_POST['submission_text']));
 
     // Check assignment existence & due date
-    $assign_q = mysqli_query($conn, "SELECT due_date FROM assignments WHERE assignment_id = $assignment_id LIMIT 1");
-    if ($assign_q && mysqli_num_rows($assign_q) > 0) {
-        $assign_data = mysqli_fetch_assoc($assign_q);
+    $assign_q = db_query($conn, "SELECT due_date FROM assignments WHERE assignment_id = $assignment_id LIMIT 1");
+    if ($assign_q && db_num_rows($assign_q) > 0) {
+        $assign_data = db_fetch_assoc($assign_q);
         $due_time = strtotime($assign_data['due_date']);
         $now_time = time();
 
@@ -73,9 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_assignment']))
 
         if ($file_upload_ok) {
             // Check if student already submitted previously
-            $chk_sub = mysqli_query($conn, "SELECT submission_id, file_path FROM assignment_submissions WHERE assignment_id = $assignment_id AND student_id = $student_id");
-            if (mysqli_num_rows($chk_sub) > 0) {
-                $existing_sub = mysqli_fetch_assoc($chk_sub);
+            $chk_sub = db_query($conn, "SELECT submission_id, file_path FROM assignment_submissions WHERE assignment_id = $assignment_id AND student_id = $student_id");
+            if (db_num_rows($chk_sub) > 0) {
+                $existing_sub = db_fetch_assoc($chk_sub);
                 $sub_id = $existing_sub['submission_id'];
                 
                 // Keep existing file if no new file uploaded
@@ -85,27 +85,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_assignment']))
                     @unlink("../" . $existing_sub['file_path']);
                 }
 
-                $stmt = mysqli_prepare($conn, "UPDATE assignment_submissions SET submission_text = ?, file_path = ?, submitted_at = NOW(), status = ? WHERE submission_id = ?");
-                mysqli_stmt_bind_param($stmt, "sssi", $submission_text, $file_path, $status, $sub_id);
-                if (mysqli_stmt_execute($stmt)) {
+                $stmt = db_prepare($conn, "UPDATE assignment_submissions SET submission_text = ?, file_path = ?, submitted_at = NOW(), status = ? WHERE submission_id = ?");
+                db_stmt_bind_param($stmt, "sssi", $submission_text, $file_path, $status, $sub_id);
+                if (db_stmt_execute($stmt)) {
                     $message = ($status === 'late') ? "Assignment submitted (Marked as Late Submission)." : "Assignment updated and submitted successfully!";
                     $message_type = ($status === 'late') ? "warning" : "success";
                 } else {
-                    $message = "Error updating submission: " . mysqli_error($conn);
+                    $message = "Error updating submission: " . db_error($conn);
                     $message_type = "danger";
                 }
-                mysqli_stmt_close($stmt);
+                db_stmt_close($stmt);
             } else {
-                $stmt = mysqli_prepare($conn, "INSERT INTO assignment_submissions (assignment_id, student_id, submission_text, file_path, status) VALUES (?, ?, ?, ?, ?)");
-                mysqli_stmt_bind_param($stmt, "iisss", $assignment_id, $student_id, $submission_text, $file_path, $status);
-                if (mysqli_stmt_execute($stmt)) {
+                $stmt = db_prepare($conn, "INSERT INTO assignment_submissions (assignment_id, student_id, submission_text, file_path, status) VALUES (?, ?, ?, ?, ?)");
+                db_stmt_bind_param($stmt, "iisss", $assignment_id, $student_id, $submission_text, $file_path, $status);
+                if (db_stmt_execute($stmt)) {
                     $message = ($status === 'late') ? "Assignment submitted (Marked as Late Submission)." : "Assignment submitted successfully!";
                     $message_type = ($status === 'late') ? "warning" : "success";
                 } else {
-                    $message = "Error saving submission: " . mysqli_error($conn);
+                    $message = "Error saving submission: " . db_error($conn);
                     $message_type = "danger";
                 }
-                mysqli_stmt_close($stmt);
+                db_stmt_close($stmt);
             }
         }
     }
@@ -135,13 +135,13 @@ $assignments_sql = "
     ORDER BY a.due_date ASC
 ";
 
-$result_assignments = mysqli_query($conn, $assignments_sql);
+$result_assignments = db_query($conn, $assignments_sql);
 $assignments_list = [];
 $urgent_count = 0;
 $pending_count = 0;
 $now_time = time();
 
-while ($row = mysqli_fetch_assoc($result_assignments)) {
+while ($row = db_fetch_assoc($result_assignments)) {
     $due_timestamp = strtotime($row['due_date']);
     $diff_seconds = $due_timestamp - $now_time;
     $is_submitted = !empty($row['submission_id']);

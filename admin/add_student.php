@@ -9,19 +9,19 @@ if(!isset($_SESSION['user_id']) || $_SESSION['role'] != "admin"){
 require_once(__DIR__ . '/../config/db.php');
 
 $query = "SELECT id,name FROM users WHERE role='student'";
-$result = mysqli_query($conn,$query);
+$result = db_query($conn,$query);
 
 if(isset($_POST['add_student']))
 {
     $user_id = $_POST['user_id'];
-    $class = mysqli_real_escape_string($conn,$_POST['class']);
-    $roll_number = mysqli_real_escape_string($conn,$_POST['roll_number']);
-    $attendance = mysqli_real_escape_string($conn,$_POST['attendance']);
+    $class = db_real_escape_string($conn,$_POST['class']);
+    $roll_number = db_real_escape_string($conn,$_POST['roll_number']);
+    $attendance = db_real_escape_string($conn,$_POST['attendance']);
 
     $insert = "INSERT INTO students(user_id,class,roll_number,attendance)
     VALUES('$user_id','$class','$roll_number','$attendance')";
 
-    if(mysqli_query($conn,$insert))
+    if(db_query($conn,$insert))
     {
         echo "<script>
         alert('Student Added Successfully');
@@ -106,7 +106,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 
                             </option>
 
-                            <?php while($row=mysqli_fetch_assoc($result)){ ?>
+                            <?php while($row=db_fetch_assoc($result)){ ?>
 
                             <option value="<?php echo $row['id']; ?>">
 

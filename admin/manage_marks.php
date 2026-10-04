@@ -20,7 +20,7 @@ INNER JOIN subjects ON marks.subject_id = subjects.subject_id
 ORDER BY marks.mark_id DESC
 ";
 
-$result = mysqli_query($conn, $query);
+$result = db_query($conn, $query);
 $page_title = "Manage Marks";
 ?>
 <!DOCTYPE html>
@@ -68,8 +68,8 @@ $page_title = "Manage Marks";
                             </tr>
                         </thead>
                         <tbody>
-                        <?php if(mysqli_num_rows($result) > 0) {
-                            while($row = mysqli_fetch_assoc($result)) {
+                        <?php if(db_num_rows($result) > 0) {
+                            while($row = db_fetch_assoc($result)) {
                                 $total = (int)$row['total_marks'];
                                 $badge_class = $total >= 40 ? 'badge-pass' : 'badge-fail';
                                 $status_text = $total >= 40 ? 'Passed' : 'Needs Attention';

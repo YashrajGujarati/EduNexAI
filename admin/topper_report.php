@@ -25,7 +25,7 @@ GROUP BY students.student_id
 ORDER BY total_marks DESC
 ";
 
-$result = mysqli_query($conn,$query);
+$result = db_query($conn,$query);
 
 ?>
 <!DOCTYPE html>
@@ -115,7 +115,7 @@ $result = mysqli_query($conn,$query);
 
                         $rank = 1;
 
-                        while($row = mysqli_fetch_assoc($result))
+                        while($row = db_fetch_assoc($result))
                         {
 
                         ?>

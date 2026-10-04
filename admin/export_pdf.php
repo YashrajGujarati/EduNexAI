@@ -47,10 +47,10 @@ ON students.user_id = users.id
 ORDER BY students.student_id ASC
 ";
 
-$result = mysqli_query($conn, $query);
+$result = db_query($conn, $query);
 
 if (!$result) {
-    die("Database Query Failed: " . mysqli_error($conn));
+    die("Database Query Failed: " . db_error($conn));
 }
 
 
@@ -66,7 +66,7 @@ $highest_attendance = 0;
 $best_performer = "N/A";
 
 
-while ($row = mysqli_fetch_assoc($result)) {
+while ($row = db_fetch_assoc($result)) {
 
     $students[] = $row;
 

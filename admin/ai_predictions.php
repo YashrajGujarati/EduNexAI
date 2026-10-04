@@ -9,15 +9,15 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != "admin") {
 require_once(__DIR__ . '/../config/db.php');
 
 // Dynamic schema column detection to handle 'result' or 'prediction' column names
-$check_col = @mysqli_query($conn, "SHOW COLUMNS FROM prediction_history LIKE 'prediction'");
-$pred_col = ($check_col && mysqli_num_rows($check_col) > 0) ? "prediction" : "result";
+$check_col = @db_query($conn, "SHOW COLUMNS FROM prediction_history LIKE 'prediction'");
+$pred_col = ($check_col && db_num_rows($check_col) > 0) ? "prediction" : "result";
 
-$excellent = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM prediction_history WHERE `$pred_col`='Excellent'"));
-$good      = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM prediction_history WHERE `$pred_col`='Good'"));
-$average   = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM prediction_history WHERE `$pred_col`='Average'"));
-$poor      = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM prediction_history WHERE `$pred_col`='Poor'"));
+$excellent = db_num_rows(db_query($conn, "SELECT * FROM prediction_history WHERE `$pred_col`='Excellent'"));
+$good      = db_num_rows(db_query($conn, "SELECT * FROM prediction_history WHERE `$pred_col`='Good'"));
+$average   = db_num_rows(db_query($conn, "SELECT * FROM prediction_history WHERE `$pred_col`='Average'"));
+$poor      = db_num_rows(db_query($conn, "SELECT * FROM prediction_history WHERE `$pred_col`='Poor'"));
 
-$query = mysqli_query($conn, "
+$query = db_query($conn, "
 SELECT
 prediction_history.*,
 users.name as student_name
@@ -29,9 +29,9 @@ ORDER BY prediction_history.created_at DESC
 
 /* Handle Batch AI Prediction Trigger */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['run_batch_predictions'])) {
-    $stus = mysqli_query($conn, "SELECT s.student_id, s.attendance, AVG(m.total_marks) as avg_marks FROM students s LEFT JOIN marks m ON s.student_id = m.student_id GROUP BY s.student_id");
+    $stus = db_query($conn, "SELECT s.student_id, s.attendance, AVG(m.total_marks) as avg_marks FROM students s LEFT JOIN marks m ON s.student_id = m.student_id GROUP BY s.student_id");
     if ($stus) {
-        while ($st = mysqli_fetch_assoc($stus)) {
+        while ($st = db_fetch_assoc($stus)) {
             $sid = (int)$st['student_id'];
             $att = (float)$st['attendance'];
             $mrk = (float)($st['avg_marks'] ?? 70);
@@ -41,8 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['run_batch_predictions
             elseif ($att >= 60 && $mrk >= 45) { $pred = 'Average'; $risk = 'Medium'; }
             else { $pred = 'Poor'; $risk = 'High'; }
 
-            @mysqli_query($conn, "INSERT INTO prediction_history (student_id, predicted_score, result, risk_level) VALUES ($sid, $mrk, '$pred', '$risk')");
-            @mysqli_query($conn, "INSERT INTO predictions (student_id, predicted_score, result, risk_level) VALUES ($sid, $mrk, '$pred', '$risk') ON DUPLICATE KEY UPDATE predicted_score=$mrk, result='$pred', risk_level='$risk'");
+            @db_query($conn, "INSERT INTO prediction_history (student_id, predicted_score, result, risk_level) VALUES ($sid, $mrk, '$pred', '$risk')");
+            @db_query($conn, "INSERT INTO predictions (student_id, predicted_score, result, risk_level) VALUES ($sid, $mrk, '$pred', '$risk') ON DUPLICATE KEY UPDATE predicted_score=$mrk, result='$pred', risk_level='$risk'");
         }
         $batch_msg = "Batch AI Model evaluation executed successfully for all enrolled students!";
     }
@@ -154,8 +154,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['run_batch_predictions
                             </tr>
                         </thead>
                         <tbody>
-                        <?php if($query && mysqli_num_rows($query) > 0) {
-                            while($row = mysqli_fetch_assoc($query)) {
+                        <?php if($query && db_num_rows($query) > 0) {
+                            while($row = db_fetch_assoc($query)) {
                                 $pred = !empty($row['prediction']) ? $row['prediction'] : (!empty($row['result']) ? $row['result'] : 'N/A');
                                 $att = isset($row['attendance']) ? number_format((float)$row['attendance'], 1).'%' : 'N/A';
                                 $marks_val = isset($row['marks']) ? $row['marks'] : (isset($row['predicted_score']) ? $row['predicted_score'] : 'N/A');

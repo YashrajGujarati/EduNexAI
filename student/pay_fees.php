@@ -13,22 +13,22 @@ require_once(__DIR__ . '/../config/db.php');
 $user_id = (int)$_SESSION['user_id'];
 
 /* Get Student Info */
-$student_q = mysqli_query($conn, "
+$student_q = db_query($conn, "
     SELECT s.student_id, u.name, u.email, s.class, s.roll_number 
     FROM users u 
     LEFT JOIN students s ON u.id = s.user_id 
     WHERE u.id = $user_id LIMIT 1
 ");
 
-if (!$student_q || mysqli_num_rows($student_q) == 0) {
+if (!$student_q || db_num_rows($student_q) == 0) {
     die("Student profile not found.");
 }
-$student = mysqli_fetch_assoc($student_q);
+$student = db_fetch_assoc($student_q);
 
 // Ensure student record exists in students table
 if (empty($student['student_id'])) {
-    $ins_stu = mysqli_query($conn, "INSERT INTO students (user_id, class, roll_number) VALUES ($user_id, 'FY-BTech', 'CS" . rand(100, 999) . "')");
-    $student_id = mysqli_insert_id($conn);
+    $ins_stu = db_query($conn, "INSERT INTO students (user_id, class, roll_number) VALUES ($user_id, 'FY-BTech', 'CS" . rand(100, 999) . "')");
+    $student_id = db_insert_id($conn);
     $student['student_id'] = $student_id;
     $student['class'] = 'FY-BTech';
 } else {
@@ -36,13 +36,13 @@ if (empty($student['student_id'])) {
 }
 
 /* Ensure Fee record exists for student */
-$fee_q = mysqli_query($conn, "SELECT * FROM student_fees WHERE student_id = $student_id LIMIT 1");
-if (!$fee_q || mysqli_num_rows($fee_q) == 0) {
+$fee_q = db_query($conn, "SELECT * FROM student_fees WHERE student_id = $student_id LIMIT 1");
+if (!$fee_q || db_num_rows($fee_q) == 0) {
     $default_due = date('Y-m-d', strtotime('+30 days'));
-    mysqli_query($conn, "INSERT INTO student_fees (student_id, total_fee, paid_fee, due_date, status) VALUES ($student_id, 50000.00, 0.00, '$default_due', 'pending')");
-    $fee_q = mysqli_query($conn, "SELECT * FROM student_fees WHERE student_id = $student_id LIMIT 1");
+    db_query($conn, "INSERT INTO student_fees (student_id, total_fee, paid_fee, due_date, status) VALUES ($student_id, 50000.00, 0.00, '$default_due', 'pending')");
+    $fee_q = db_query($conn, "SELECT * FROM student_fees WHERE student_id = $student_id LIMIT 1");
 }
-$fee_record = mysqli_fetch_assoc($fee_q);
+$fee_record = db_fetch_assoc($fee_q);
 $fee_id = (int)$fee_record['fee_id'];
 
 $total_fee = (float)$fee_record['total_fee'];
@@ -60,7 +60,7 @@ $new_receipt_id = 0;
 ========================================================= */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['process_payment'])) {
     $amount_paid = (float)$_POST['amount_paid'];
-    $payment_method = trim(mysqli_real_escape_string($conn, $_POST['payment_method']));
+    $payment_method = trim(db_real_escape_string($conn, $_POST['payment_method']));
 
     if ($amount_paid <= 0) {
         $message = "Please enter a valid payment amount greater than ₹0.";
@@ -73,20 +73,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['process_payment'])) {
         $receipt_no = "RCPT-" . date('Ym') . rand(1000, 9999);
 
         // Insert transaction record
-        $stmt = mysqli_prepare($conn, "INSERT INTO fee_payments (fee_id, student_id, amount_paid, payment_method, transaction_id, receipt_no, payment_status) VALUES (?, ?, ?, ?, ?, ?, 'success')");
-        mysqli_stmt_bind_param($stmt, "iidsss", $fee_id, $student_id, $amount_paid, $payment_method, $txn_id, $receipt_no);
+        $stmt = db_prepare($conn, "INSERT INTO fee_payments (fee_id, student_id, amount_paid, payment_method, transaction_id, receipt_no, payment_status) VALUES (?, ?, ?, ?, ?, ?, 'success')");
+        db_stmt_bind_param($stmt, "iidsss", $fee_id, $student_id, $amount_paid, $payment_method, $txn_id, $receipt_no);
         
-        if (mysqli_stmt_execute($stmt)) {
-            $new_receipt_id = mysqli_insert_id($conn);
+        if (db_stmt_execute($stmt)) {
+            $new_receipt_id = db_insert_id($conn);
 
             // Update student_fees table
             $new_paid = $paid_fee + $amount_paid;
             $new_status = ($new_paid >= $total_fee) ? 'paid' : (($new_paid > 0) ? 'partial' : 'pending');
 
-            $upd = mysqli_prepare($conn, "UPDATE student_fees SET paid_fee = ?, status = ? WHERE fee_id = ?");
-            mysqli_stmt_bind_param($upd, "dsi", $new_paid, $new_status, $fee_id);
-            mysqli_stmt_execute($upd);
-            mysqli_stmt_close($upd);
+            $upd = db_prepare($conn, "UPDATE student_fees SET paid_fee = ?, status = ? WHERE fee_id = ?");
+            db_stmt_bind_param($upd, "dsi", $new_paid, $new_status, $fee_id);
+            db_stmt_execute($upd);
+            db_stmt_close($upd);
 
             // Refresh values
             $paid_fee = $new_paid;
@@ -96,19 +96,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['process_payment'])) {
             $message = "Payment of ₹" . number_format($amount_paid, 2) . " processed successfully! Receipt #" . $receipt_no . " generated.";
             $message_type = "success";
         } else {
-            $message = "Payment failed to record: " . mysqli_error($conn);
+            $message = "Payment failed to record: " . db_error($conn);
             $message_type = "danger";
         }
-        mysqli_stmt_close($stmt);
+        db_stmt_close($stmt);
     }
 }
 
 /* =========================================================
    FETCH TRANSACTION HISTORY
 ========================================================= */
-$history_q = mysqli_query($conn, "SELECT * FROM fee_payments WHERE student_id = $student_id ORDER BY payment_date DESC");
+$history_q = db_query($conn, "SELECT * FROM fee_payments WHERE student_id = $student_id ORDER BY payment_date DESC");
 $payment_history = [];
-while ($h = mysqli_fetch_assoc($history_q)) {
+while ($h = db_fetch_assoc($history_q)) {
     $payment_history[] = $h;
 }
 

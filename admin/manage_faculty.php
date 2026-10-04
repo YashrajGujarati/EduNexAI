@@ -8,7 +8,7 @@ if(!isset($_SESSION['user_id']) || $_SESSION['role'] != "admin") {
 
 require_once(__DIR__ . '/../config/db.php');
 $query = "SELECT * FROM users WHERE role='faculty' ORDER BY created_at DESC";
-$result = mysqli_query($conn, $query);
+$result = db_query($conn, $query);
 $page_title = "Manage Faculty";
 ?>
 <!DOCTYPE html>
@@ -54,8 +54,8 @@ $page_title = "Manage Faculty";
                             </tr>
                         </thead>
                         <tbody>
-                        <?php if(mysqli_num_rows($result) > 0) {
-                            while($row = mysqli_fetch_assoc($result)) {
+                        <?php if(db_num_rows($result) > 0) {
+                            while($row = db_fetch_assoc($result)) {
                         ?>
                             <tr>
                                 <td class="ps-4 fw-bold">#<?php echo $row['id']; ?></td>

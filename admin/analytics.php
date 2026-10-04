@@ -9,24 +9,24 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != "admin") {
 require_once(__DIR__ . '/../config/db.php');
 
 /* Fetch Metrics & Distribution Data */
-$stu_res = mysqli_query($conn, "SELECT COUNT(*) as count FROM students");
-$total_students = mysqli_fetch_assoc($stu_res)['count'] ?? 0;
+$stu_res = db_query($conn, "SELECT COUNT(*) as count FROM students");
+$total_students = db_fetch_assoc($stu_res)['count'] ?? 0;
 
-$avg_res = mysqli_query($conn, "SELECT AVG(total_marks) as avg_marks FROM marks");
-$overall_avg = round(mysqli_fetch_assoc($avg_res)['avg_marks'] ?? 0);
+$avg_res = db_query($conn, "SELECT AVG(total_marks) as avg_marks FROM marks");
+$overall_avg = round(db_fetch_assoc($avg_res)['avg_marks'] ?? 0);
 
 /* Grade Distribution */
-$high_res = mysqli_query($conn, "SELECT COUNT(DISTINCT student_id) as cnt FROM marks WHERE total_marks >= 75");
-$cnt_high = mysqli_fetch_assoc($high_res)['cnt'] ?? 0;
+$high_res = db_query($conn, "SELECT COUNT(DISTINCT student_id) as cnt FROM marks WHERE total_marks >= 75");
+$cnt_high = db_fetch_assoc($high_res)['cnt'] ?? 0;
 
-$avg_perf_res = mysqli_query($conn, "SELECT COUNT(DISTINCT student_id) as cnt FROM marks WHERE total_marks >= 50 AND total_marks < 75");
-$cnt_avg = mysqli_fetch_assoc($avg_perf_res)['cnt'] ?? 0;
+$avg_perf_res = db_query($conn, "SELECT COUNT(DISTINCT student_id) as cnt FROM marks WHERE total_marks >= 50 AND total_marks < 75");
+$cnt_avg = db_fetch_assoc($avg_perf_res)['cnt'] ?? 0;
 
-$risk_res = mysqli_query($conn, "SELECT COUNT(DISTINCT student_id) as cnt FROM marks WHERE total_marks < 50");
-$cnt_risk = mysqli_fetch_assoc($risk_res)['cnt'] ?? 0;
+$risk_res = db_query($conn, "SELECT COUNT(DISTINCT student_id) as cnt FROM marks WHERE total_marks < 50");
+$cnt_risk = db_fetch_assoc($risk_res)['cnt'] ?? 0;
 
 /* Subject Performance Averages */
-$sub_chart_query = mysqli_query($conn, "
+$sub_chart_query = db_query($conn, "
     SELECT s.subject_name, ROUND(AVG(m.total_marks)) as avg_score
     FROM subjects s
     LEFT JOIN marks m ON s.subject_id = m.subject_id
@@ -35,24 +35,24 @@ $sub_chart_query = mysqli_query($conn, "
 $subject_names = [];
 $subject_scores = [];
 if ($sub_chart_query) {
-    while ($row = mysqli_fetch_assoc($sub_chart_query)) {
+    while ($row = db_fetch_assoc($sub_chart_query)) {
         $subject_names[] = $row['subject_name'];
         $subject_scores[] = (int)($row['avg_score'] ?? 0);
     }
 }
 
 /* Attendance Distribution */
-$att_res_1 = mysqli_query($conn, "SELECT COUNT(*) as cnt FROM students WHERE attendance < 60");
-$att_low = mysqli_fetch_assoc($att_res_1)['cnt'] ?? 0;
+$att_res_1 = db_query($conn, "SELECT COUNT(*) as cnt FROM students WHERE attendance < 60");
+$att_low = db_fetch_assoc($att_res_1)['cnt'] ?? 0;
 
-$att_res_2 = mysqli_query($conn, "SELECT COUNT(*) as cnt FROM students WHERE attendance >= 60 AND attendance < 75");
-$att_mid = mysqli_fetch_assoc($att_res_2)['cnt'] ?? 0;
+$att_res_2 = db_query($conn, "SELECT COUNT(*) as cnt FROM students WHERE attendance >= 60 AND attendance < 75");
+$att_mid = db_fetch_assoc($att_res_2)['cnt'] ?? 0;
 
-$att_res_3 = mysqli_query($conn, "SELECT COUNT(*) as cnt FROM students WHERE attendance >= 75 AND attendance < 90");
-$att_good = mysqli_fetch_assoc($att_res_3)['cnt'] ?? 0;
+$att_res_3 = db_query($conn, "SELECT COUNT(*) as cnt FROM students WHERE attendance >= 75 AND attendance < 90");
+$att_good = db_fetch_assoc($att_res_3)['cnt'] ?? 0;
 
-$att_res_4 = mysqli_query($conn, "SELECT COUNT(*) as cnt FROM students WHERE attendance >= 90");
-$att_high = mysqli_fetch_assoc($att_res_4)['cnt'] ?? 0;
+$att_res_4 = db_query($conn, "SELECT COUNT(*) as cnt FROM students WHERE attendance >= 90");
+$att_high = db_fetch_assoc($att_res_4)['cnt'] ?? 0;
 
 $page_title = "Analytics Dashboard";
 ?>

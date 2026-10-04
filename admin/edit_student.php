@@ -19,17 +19,17 @@ ON students.user_id = users.id
 WHERE student_id='$id'
 ";
 
-$result = mysqli_query($conn,$query);
+$result = db_query($conn,$query);
 
-$student = mysqli_fetch_assoc($result);
+$student = db_fetch_assoc($result);
 
 if(isset($_POST['update_student']))
 {
-    $class = mysqli_real_escape_string($conn,$_POST['class']);
+    $class = db_real_escape_string($conn,$_POST['class']);
 
-    $roll_number = mysqli_real_escape_string($conn,$_POST['roll_number']);
+    $roll_number = db_real_escape_string($conn,$_POST['roll_number']);
 
-    $attendance = mysqli_real_escape_string($conn,$_POST['attendance']);
+    $attendance = db_real_escape_string($conn,$_POST['attendance']);
 
     $update = "
     UPDATE students
@@ -40,7 +40,7 @@ if(isset($_POST['update_student']))
     WHERE student_id='$id'
     ";
 
-    if(mysqli_query($conn,$update))
+    if(db_query($conn,$update))
     {
         echo "<script>
 

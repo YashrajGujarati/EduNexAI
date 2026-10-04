@@ -14,7 +14,7 @@ $id = $_GET['id'];
 
 /* Student List */
 
-$students = mysqli_query($conn,"
+$students = db_query($conn,"
 SELECT students.student_id, users.name
 FROM students
 INNER JOIN users
@@ -23,7 +23,7 @@ ON students.user_id = users.id
 
 /* Subject List */
 
-$subjects = mysqli_query($conn,"
+$subjects = db_query($conn,"
 SELECT *
 FROM subjects
 ");
@@ -36,9 +36,9 @@ FROM marks
 WHERE mark_id='$id'
 ";
 
-$result = mysqli_query($conn,$query);
+$result = db_query($conn,$query);
 
-$mark = mysqli_fetch_assoc($result);
+$mark = db_fetch_assoc($result);
 
 if(isset($_POST['update_marks']))
 {
@@ -71,7 +71,7 @@ if(isset($_POST['update_marks']))
 
     ";
 
-    if(mysqli_query($conn,$update))
+    if(db_query($conn,$update))
     {
         echo "<script>
 
@@ -132,7 +132,7 @@ if(isset($_POST['update_marks']))
 
 <select name="student_id" class="form-control">
 
-<?php while($row=mysqli_fetch_assoc($students)){ ?>
+<?php while($row=db_fetch_assoc($students)){ ?>
 
 <option
 value="<?php echo $row['student_id']; ?>"
@@ -154,7 +154,7 @@ value="<?php echo $row['student_id']; ?>"
 
 <select name="subject_id" class="form-control">
 
-<?php while($row=mysqli_fetch_assoc($subjects)){ ?>
+<?php while($row=db_fetch_assoc($subjects)){ ?>
 
 <option
 value="<?php echo $row['subject_id']; ?>"

@@ -9,12 +9,12 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != "faculty") {
 require_once(__DIR__ . '/../config/db.php');
 
 $user_id = $_SESSION['user_id'];
-$query = mysqli_query($conn, "SELECT * FROM users WHERE id = '$user_id' LIMIT 1");
-$faculty = mysqli_fetch_assoc($query);
+$query = db_query($conn, "SELECT * FROM users WHERE id = '$user_id' LIMIT 1");
+$faculty = db_fetch_assoc($query);
 
 /* Count assigned subjects */
-$sub_count_query = mysqli_query($conn, "SELECT COUNT(*) as count FROM subjects WHERE faculty_id='$user_id'");
-$sub_count = (int)(mysqli_fetch_assoc($sub_count_query)['count'] ?? 0);
+$sub_count_query = db_query($conn, "SELECT COUNT(*) as count FROM subjects WHERE faculty_id='$user_id'");
+$sub_count = (int)(db_fetch_assoc($sub_count_query)['count'] ?? 0);
 
 $page_title = "Faculty Profile";
 ?>

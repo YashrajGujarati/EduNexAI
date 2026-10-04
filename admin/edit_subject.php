@@ -14,17 +14,17 @@ $id = intval($_GET['id']);
 
 $query = "SELECT * FROM subjects WHERE subject_id='$id'";
 
-$result = mysqli_query($conn,$query);
+$result = db_query($conn,$query);
 
-$subject = mysqli_fetch_assoc($result);
+$subject = db_fetch_assoc($result);
 
 $faculty_query = "SELECT id,name FROM users WHERE role='faculty'";
 
-$faculty_result = mysqli_query($conn,$faculty_query);
+$faculty_result = db_query($conn,$faculty_query);
 
 if(isset($_POST['update_subject']))
 {
-    $subject_name = mysqli_real_escape_string($conn,$_POST['subject_name']);
+    $subject_name = db_real_escape_string($conn,$_POST['subject_name']);
 
     $faculty_id = $_POST['faculty_id'];
 
@@ -36,7 +36,7 @@ if(isset($_POST['update_subject']))
     WHERE subject_id='$id'
     ";
 
-    if(mysqli_query($conn,$update))
+    if(db_query($conn,$update))
     {
         echo "<script>
 
@@ -138,7 +138,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
                         class="form-control"
                         required>
 
-                            <?php while($row=mysqli_fetch_assoc($faculty_result)){ ?>
+                            <?php while($row=db_fetch_assoc($faculty_result)){ ?>
 
                             <option
                             value="<?php echo $row['id']; ?>"

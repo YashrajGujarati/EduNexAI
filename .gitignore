@@ -5,3 +5,8 @@ vendor/
 !.env.example
 __pycache__/
 *.pyc
+
+# Python runtime-generated output files (generated dynamically at runtime)
+python/output/*.png
+python/output/*.csv
+python/output/*.pdf

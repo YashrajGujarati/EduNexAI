@@ -13,11 +13,11 @@
     if(isset($_GET['id']))
     {
 
-        $id = mysqli_real_escape_string($conn, $_GET['id']);
+        $id = db_real_escape_string($conn, $_GET['id']);
 
         $query = "DELETE FROM marks WHERE mark_id = '$id'";
 
-        if(mysqli_query($conn, $query))
+        if(db_query($conn, $query))
         {
 
             echo "<script>

@@ -9,20 +9,20 @@ if(!isset($_SESSION['user_id']) || $_SESSION['role'] != "admin") {
 require_once(__DIR__ . '/../config/db.php');
 
 /* Robust Counts */
-$res_st = mysqli_query($conn, "SELECT COUNT(*) AS total FROM students");
-$cnt_students = ($res_st && $row = mysqli_fetch_assoc($res_st)) ? (int)$row['total'] : 0;
+$res_st = db_query($conn, "SELECT COUNT(*) AS total FROM students");
+$cnt_students = ($res_st && $row = db_fetch_assoc($res_st)) ? (int)$row['total'] : 0;
 
-$res_fc = mysqli_query($conn, "SELECT COUNT(*) AS total FROM users WHERE role='faculty'");
-$cnt_faculty = ($res_fc && $row = mysqli_fetch_assoc($res_fc)) ? (int)$row['total'] : 0;
+$res_fc = db_query($conn, "SELECT COUNT(*) AS total FROM users WHERE role='faculty'");
+$cnt_faculty = ($res_fc && $row = db_fetch_assoc($res_fc)) ? (int)$row['total'] : 0;
 
-$res_sb = mysqli_query($conn, "SELECT COUNT(*) AS total FROM subjects");
-$cnt_subjects = ($res_sb && $row = mysqli_fetch_assoc($res_sb)) ? (int)$row['total'] : 0;
+$res_sb = db_query($conn, "SELECT COUNT(*) AS total FROM subjects");
+$cnt_subjects = ($res_sb && $row = db_fetch_assoc($res_sb)) ? (int)$row['total'] : 0;
 
-$res_mk = mysqli_query($conn, "SELECT COUNT(*) AS total FROM marks");
-$cnt_marks = ($res_mk && $row = mysqli_fetch_assoc($res_mk)) ? (int)$row['total'] : 0;
+$res_mk = db_query($conn, "SELECT COUNT(*) AS total FROM marks");
+$cnt_marks = ($res_mk && $row = db_fetch_assoc($res_mk)) ? (int)$row['total'] : 0;
 
 /* Preview Recent Academic Records */
-$preview_query = mysqli_query($conn, "
+$preview_query = db_query($conn, "
     SELECT
         s.student_id,
         u.name as student_name,
@@ -214,8 +214,8 @@ $page_title = "Reports & Exports";
                             </tr>
                         </thead>
                         <tbody>
-                        <?php if ($preview_query && mysqli_num_rows($preview_query) > 0): ?>
-                            <?php while ($row = mysqli_fetch_assoc($preview_query)): 
+                        <?php if ($preview_query && db_num_rows($preview_query) > 0): ?>
+                            <?php while ($row = db_fetch_assoc($preview_query)): 
                                 $att = (float)($row['attendance'] ?? 0);
                                 $avg = round((float)($row['avg_score'] ?? 0));
                                 $badge_class = ($att >= 75 && $avg >= 40) ? 'badge-pass' : 'badge-fail';

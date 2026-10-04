@@ -9,7 +9,7 @@ if(!isset($_SESSION['user_id']) || $_SESSION['role']!="admin") {
 require_once(__DIR__ . '/../config/db.php');
 
 /* Student Dropdown */
-$students = mysqli_query($conn,"
+$students = db_query($conn,"
 SELECT students.student_id, users.name
 FROM students
 INNER JOIN users ON students.user_id = users.id
@@ -17,7 +17,7 @@ ORDER BY users.name ASC
 ");
 
 /* Subject Dropdown */
-$subjects = mysqli_query($conn,"
+$subjects = db_query($conn,"
 SELECT subject_id, subject_name
 FROM subjects
 ORDER BY subject_name ASC
@@ -35,7 +35,7 @@ if(isset($_POST['add_marks'])) {
 
     $query = "INSERT INTO marks (student_id, subject_id, internal_marks, external_marks, total_marks) VALUES ('$student_id', '$subject_id', '$internal', '$external', '$total')";
 
-    if(mysqli_query($conn, $query)) {
+    if(db_query($conn, $query)) {
         $message = "Student marks added successfully! Redirecting...";
         $message_type = "success";
         echo "<script>setTimeout(function(){ window.location='manage_marks.php'; }, 1200);</script>";
@@ -94,7 +94,7 @@ $page_title = "Add Student Marks";
                                         <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
                                         <select name="student_id" class="form-select" required>
                                             <option value="">-- Choose Student --</option>
-                                            <?php while($s = mysqli_fetch_assoc($students)): ?>
+                                            <?php while($s = db_fetch_assoc($students)): ?>
                                                 <option value="<?php echo $s['student_id']; ?>">
                                                     <?php echo htmlspecialchars($s['name']); ?> (ID: #<?php echo $s['student_id']; ?>)
                                                 </option>
@@ -109,7 +109,7 @@ $page_title = "Add Student Marks";
                                         <span class="input-group-text"><i class="fas fa-book-bookmark"></i></span>
                                         <select name="subject_id" class="form-select" required>
                                             <option value="">-- Choose Subject --</option>
-                                            <?php while($sub = mysqli_fetch_assoc($subjects)): ?>
+                                            <?php while($sub = db_fetch_assoc($subjects)): ?>
                                                 <option value="<?php echo $sub['subject_id']; ?>">
                                                     <?php echo htmlspecialchars($sub['subject_name']); ?>
                                                 </option>

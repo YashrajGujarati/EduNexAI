@@ -30,16 +30,16 @@ $query = "
     WHERE u.id = ?
     LIMIT 1
 ";
-$stmt = mysqli_prepare($conn, $query);
-mysqli_stmt_bind_param($stmt, "i", $user_id);
-mysqli_stmt_execute($stmt);
-$result = mysqli_stmt_get_result($stmt);
+$stmt = db_prepare($conn, $query);
+db_stmt_bind_param($stmt, "i", $user_id);
+db_stmt_execute($stmt);
+$result = db_stmt_get_result($stmt);
 
-if (!$result || mysqli_num_rows($result) == 0) {
+if (!$result || db_num_rows($result) == 0) {
     die("Student information not found.");
 }
-$student = mysqli_fetch_assoc($result);
-mysqli_stmt_close($stmt);
+$student = db_fetch_assoc($result);
+db_stmt_close($stmt);
 
 $student_name = $student['name'];
 $student_email = $student['email'];
@@ -59,37 +59,37 @@ $marks_query = "
     INNER JOIN subjects sub ON m.subject_id = sub.subject_id
     WHERE m.student_id = ?
 ";
-$stmt = mysqli_prepare($conn, $marks_query);
-mysqli_stmt_bind_param($stmt, "i", $student_id);
-mysqli_stmt_execute($stmt);
-$marks_result = mysqli_stmt_get_result($stmt);
+$stmt = db_prepare($conn, $marks_query);
+db_stmt_bind_param($stmt, "i", $student_id);
+db_stmt_execute($stmt);
+$marks_result = db_stmt_get_result($stmt);
 
 $subject_marks = [];
 $total_score_sum = 0;
 $marks_count = 0;
 
 if ($marks_result) {
-    while ($row = mysqli_fetch_assoc($marks_result)) {
+    while ($row = db_fetch_assoc($marks_result)) {
         $subject_marks[] = $row;
         $total_score_sum += (int)$row['total_marks'];
         $marks_count++;
     }
 }
-mysqli_stmt_close($stmt);
+db_stmt_close($stmt);
 
 $average_marks = ($marks_count > 0) ? round($total_score_sum / $marks_count) : 0;
 $total_subjects = count($subject_marks);
 
 /* Latest AI Prediction */
 $latest_prediction = "Pending Run";
-$pred_query = mysqli_query($conn, "SELECT * FROM prediction_history WHERE student_id = '$student_id' ORDER BY created_at DESC LIMIT 1");
-if ($pred_query && mysqli_num_rows($pred_query) > 0) {
-    $pred_row = mysqli_fetch_assoc($pred_query);
+$pred_query = db_query($conn, "SELECT * FROM prediction_history WHERE student_id = '$student_id' ORDER BY created_at DESC LIMIT 1");
+if ($pred_query && db_num_rows($pred_query) > 0) {
+    $pred_row = db_fetch_assoc($pred_query);
     $latest_prediction = !empty($pred_row['result']) ? $pred_row['result'] : ($pred_row['prediction'] ?? 'N/A');
 }
 
 /* Pending Assignments Check */
-$pending_assign_query = mysqli_query($conn, "
+$pending_assign_query = db_query($conn, "
     SELECT 
         a.assignment_id,
         a.title,
@@ -103,11 +103,11 @@ $pending_assign_query = mysqli_query($conn, "
     ORDER BY a.due_date ASC
 ");
 
-$pending_assignments_count = ($pending_assign_query) ? mysqli_num_rows($pending_assign_query) : 0;
+$pending_assignments_count = ($pending_assign_query) ? db_num_rows($pending_assign_query) : 0;
 $urgent_due_assignments = [];
 $now_ts = time();
 if ($pending_assign_query) {
-    while ($p_row = mysqli_fetch_assoc($pending_assign_query)) {
+    while ($p_row = db_fetch_assoc($pending_assign_query)) {
         $due_ts = strtotime($p_row['due_date']);
         if ($due_ts > $now_ts && ($due_ts - $now_ts <= 48 * 3600)) {
             $urgent_due_assignments[] = $p_row;

@@ -9,11 +9,11 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== "student") {
 require_once(__DIR__ . '/../config/db.php');
 
 $user_id = $_SESSION['user_id'];
-$getStudent = mysqli_query($conn, "SELECT student_id, class, roll_number FROM students WHERE user_id='$user_id'");
-$student = mysqli_fetch_assoc($getStudent);
+$getStudent = db_query($conn, "SELECT student_id, class, roll_number FROM students WHERE user_id='$user_id'");
+$student = db_fetch_assoc($getStudent);
 $student_id = $student['student_id'] ?? 0;
 
-$query = mysqli_query($conn, "
+$query = db_query($conn, "
     SELECT
         subjects.subject_name,
         marks.internal_marks,
@@ -30,7 +30,7 @@ $total_max = 0;
 $has_failed = false;
 
 if ($query) {
-    while ($row = mysqli_fetch_assoc($query)) {
+    while ($row = db_fetch_assoc($query)) {
         $results[] = $row;
         $t = (int)$row['total_marks'];
         $total_obtained += $t;

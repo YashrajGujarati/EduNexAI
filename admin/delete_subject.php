@@ -14,7 +14,7 @@ $id = intval($_GET['id']);
 
 $query = "DELETE FROM subjects WHERE subject_id='$id'";
 
-if(mysqli_query($conn,$query))
+if(db_query($conn,$query))
 {
     echo "<script>
 

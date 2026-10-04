@@ -17,29 +17,29 @@ require_once(__DIR__ . '/../config/db.php');
 $faculty_id = (int)$_SESSION['user_id'];
 
 /* Faculty Info */
-$faculty_query = mysqli_query($conn, "SELECT id, name, email FROM users WHERE id = $faculty_id LIMIT 1");
-if (!$faculty_query || mysqli_num_rows($faculty_query) == 0) {
+$faculty_query = db_query($conn, "SELECT id, name, email FROM users WHERE id = $faculty_id LIMIT 1");
+if (!$faculty_query || db_num_rows($faculty_query) == 0) {
     die("Faculty information not found.");
 }
-$faculty = mysqli_fetch_assoc($faculty_query);
+$faculty = db_fetch_assoc($faculty_query);
 $faculty_name = $faculty['name'];
 $faculty_email = $faculty['email'];
 
 /* Assigned Subjects */
-$subject_query = mysqli_query($conn, "SELECT subject_id, subject_name, subject_code FROM subjects WHERE faculty_id = $faculty_id ORDER BY subject_name ASC");
-$total_subjects = mysqli_num_rows($subject_query);
+$subject_query = db_query($conn, "SELECT subject_id, subject_name, subject_code FROM subjects WHERE faculty_id = $faculty_id ORDER BY subject_name ASC");
+$total_subjects = db_num_rows($subject_query);
 $faculty_subjects = [];
-while ($subject = mysqli_fetch_assoc($subject_query)) {
+while ($subject = db_fetch_assoc($subject_query)) {
     $faculty_subjects[] = $subject;
 }
 
 /* Total Students */
-$student_count_query = mysqli_query($conn, "SELECT COUNT(DISTINCT s.student_id) as total FROM students s");
-$total_students = mysqli_fetch_assoc($student_count_query)['total'] ?? 0;
+$student_count_query = db_query($conn, "SELECT COUNT(DISTINCT s.student_id) as total FROM students s");
+$total_students = db_fetch_assoc($student_count_query)['total'] ?? 0;
 
 /* Average Class Performance */
-$avg_marks_query = mysqli_query($conn, "SELECT AVG(total_marks) as avg_score FROM marks");
-$avg_score = round(mysqli_fetch_assoc($avg_marks_query)['avg_score'] ?? 0);
+$avg_marks_query = db_query($conn, "SELECT AVG(total_marks) as avg_score FROM marks");
+$avg_score = round(db_fetch_assoc($avg_marks_query)['avg_score'] ?? 0);
 
 $page_title = "Faculty Dashboard";
 ?>

@@ -9,7 +9,7 @@ if(!isset($_SESSION['user_id']) || $_SESSION['role'] != "faculty") {
 require_once(__DIR__ . '/../config/db.php');
 
 $faculty_id = $_SESSION['user_id'];
-$query = mysqli_query($conn, "SELECT * FROM subjects WHERE faculty_id = '$faculty_id' ORDER BY subject_id ASC");
+$query = db_query($conn, "SELECT * FROM subjects WHERE faculty_id = '$faculty_id' ORDER BY subject_id ASC");
 $page_title = "My Subjects";
 ?>
 
@@ -49,8 +49,8 @@ $page_title = "My Subjects";
                             </tr>
                         </thead>
                         <tbody>
-                        <?php if(mysqli_num_rows($query) > 0) {
-                            while($row = mysqli_fetch_assoc($query)) {
+                        <?php if(db_num_rows($query) > 0) {
+                            while($row = db_fetch_assoc($query)) {
                         ?>
                             <tr>
                                 <td class="ps-4 fw-bold">#<?php echo $row['subject_id']; ?></td>
@@ -91,4 +91,4 @@ $page_title = "My Subjects";
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+</html>

@@ -14,15 +14,15 @@ $id = intval($_GET['id']);
 
 $query = "SELECT * FROM users WHERE id='$id'";
 
-$result = mysqli_query($conn,$query);
+$result = db_query($conn,$query);
 
-$faculty = mysqli_fetch_assoc($result);
+$faculty = db_fetch_assoc($result);
 
 if(isset($_POST['update_faculty']))
 {
-    $name = mysqli_real_escape_string($conn,$_POST['name']);
+    $name = db_real_escape_string($conn,$_POST['name']);
 
-    $email = mysqli_real_escape_string($conn,$_POST['email']);
+    $email = db_real_escape_string($conn,$_POST['email']);
 
     $update = "UPDATE users
                SET
@@ -30,7 +30,7 @@ if(isset($_POST['update_faculty']))
                email='$email'
                WHERE id='$id'";
 
-    if(mysqli_query($conn,$update))
+    if(db_query($conn,$update))
     {
         echo "<script>
 

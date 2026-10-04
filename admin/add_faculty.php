@@ -12,9 +12,9 @@ require_once(__DIR__ . '/../config/db.php');
 
 if(isset($_POST['add_faculty']))
 {
-    $name = mysqli_real_escape_string($conn,$_POST['name']);
+    $name = db_real_escape_string($conn,$_POST['name']);
 
-    $email = mysqli_real_escape_string($conn,$_POST['email']);
+    $email = db_real_escape_string($conn,$_POST['email']);
 
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
@@ -23,7 +23,7 @@ if(isset($_POST['add_faculty']))
     $query = "INSERT INTO users(name,email,password,role)
               VALUES('$name','$email','$password','$role')";
 
-    if(mysqli_query($conn,$query))
+    if(db_query($conn,$query))
     {
         echo "<script>
 

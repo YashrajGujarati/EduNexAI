@@ -37,14 +37,14 @@ if(isset($_POST['import']))
     $enrollment = 240801001;
 
     // Last Enrollment Number Check
-  $checkEnroll = mysqli_query($conn,
+  $checkEnroll = db_query($conn,
 
 "SELECT MAX(CAST(enrollment_no AS UNSIGNED)) AS last_enrollment
 FROM users
 WHERE role='student'
 AND enrollment_no REGEXP '^[0-9]+$'");
 
-$last = mysqli_fetch_assoc($checkEnroll);
+$last = db_fetch_assoc($checkEnroll);
 
 if(!empty($last['last_enrollment']))
 {
@@ -59,10 +59,10 @@ else
     foreach($rows as $row)
     {
 
-        $name = mysqli_real_escape_string($conn, trim($row[0]));
-        $email = mysqli_real_escape_string($conn, trim($row[1]));
-        $mobile = mysqli_real_escape_string($conn, trim($row[2]));
-        $class = mysqli_real_escape_string($conn, trim($row[3]));
+        $name = db_real_escape_string($conn, trim($row[0]));
+        $email = db_real_escape_string($conn, trim($row[1]));
+        $mobile = db_real_escape_string($conn, trim($row[2]));
+        $class = db_real_escape_string($conn, trim($row[3]));
         $roll = trim($row[4]);
         $attendance = (float)$row[5];
 
@@ -73,19 +73,19 @@ else
         }
 
         // Duplicate Email
-        $emailCheck = mysqli_query($conn,
+        $emailCheck = db_query($conn,
         "SELECT id FROM users WHERE email='$email'");
 
-        if(mysqli_num_rows($emailCheck) > 0)
+        if(db_num_rows($emailCheck) > 0)
         {
             continue;
         }
 
         // Duplicate Mobile
-        $mobileCheck = mysqli_query($conn,
+        $mobileCheck = db_query($conn,
         "SELECT id FROM users WHERE mobile='$mobile'");
 
-        if(mysqli_num_rows($mobileCheck) > 0)
+        if(db_num_rows($mobileCheck) > 0)
         {
             continue;
         }
@@ -94,7 +94,7 @@ else
         $password = password_hash($mobile, PASSWORD_DEFAULT);
 
         // Insert into Users Table
-        $userInsert = mysqli_query($conn,
+        $userInsert = db_query($conn,
 
         "INSERT INTO users
         (name,email,mobile,enrollment_no,password,role)
@@ -111,9 +111,9 @@ else
         if($userInsert)
         {
 
-            $user_id = mysqli_insert_id($conn);
+            $user_id = db_insert_id($conn);
 
-            mysqli_query($conn,
+            db_query($conn,
 
             "INSERT INTO students
             (user_id,class,roll_number,attendance)

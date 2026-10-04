@@ -1,8 +1,8 @@
 <?php
 
 // ============================================================
-// EduNexAI — Database Configuration
-// Supports: XAMPP local development + Railway PHP + Railway MySQL
+// EduNexAI — MongoDB Database Configuration
+// Supports: Localhost MongoDB + Cloud MongoDB / Atlas / Railway
 // ============================================================
 
 // 1. Include CORS & Cross-Origin Session configuration
@@ -44,65 +44,180 @@ if (file_exists($envFile)) {
     }
 }
 
-// ============================================================
-// 4. Resolve database credentials from environment variables
-// Priority: DB_* vars -> MYSQL* vars (Railway) -> defaults
-// ============================================================
-
-$db_host = getenv('DB_HOST') ?: (getenv('MYSQLHOST') ?: 'localhost');
-$db_user = getenv('DB_USER') ?: (getenv('MYSQLUSER') ?: 'root');
-$db_pass = getenv('DB_PASSWORD') !== false
-    ? getenv('DB_PASSWORD')
-    : (getenv('MYSQLPASSWORD') !== false
-        ? getenv('MYSQLPASSWORD')
-        : (getenv('MYSQL_ROOT_PASSWORD') !== false
-            ? getenv('MYSQL_ROOT_PASSWORD')
-            : ''));
-$db_name = getenv('DB_NAME') ?: (getenv('MYSQLDATABASE') ?: (getenv('MYSQL_DATABASE') ?: 'student_ai_system'));
-$db_port = (int)(getenv('DB_PORT') ?: (getenv('MYSQLPORT') ?: 3306));
-
-// Support Railway MYSQL_PUBLIC_URL / MYSQL_URL / DATABASE_URL if provided
-$mysql_url = getenv('MYSQL_PUBLIC_URL') ?: (getenv('MYSQL_URL') ?: getenv('DATABASE_URL'));
-if ($mysql_url) {
-    $db_opts = parse_url($mysql_url);
-    if ($db_opts !== false) {
-        if (!empty($db_opts['host'])) $db_host = $db_opts['host'];
-        if (!empty($db_opts['user'])) $db_user = $db_opts['user'];
-        if (isset($db_opts['pass']))  $db_pass = $db_opts['pass'];
-        if (!empty($db_opts['path'])) $db_name = ltrim($db_opts['path'], '/');
-        if (!empty($db_opts['port'])) $db_port = (int)$db_opts['port'];
-    }
-}
+// 4. Include MongoDB Driver & SQL Translation Engine
+require_once(__DIR__ . '/../includes/mongodb_driver.php');
 
 // ============================================================
-// 5. Establish MySQLi connection
+// 5. Resolve MongoDB credentials from environment variables
 // ============================================================
-mysqli_report(MYSQLI_REPORT_OFF);
-$conn = @mysqli_connect(
-    $db_host,
-    $db_user,
-    $db_pass,
-    $db_name,
-    $db_port
-);
+$mongo_uri = getenv('MONGODB_URI') ?: (getenv('MONGO_URL') ?: 'mongodb://127.0.0.1:27017');
+$mongo_db  = getenv('MONGODB_DATABASE') ?: (getenv('DB_NAME') ?: 'student_ai_system');
 
-// Fallback to local MySQL only in local/development environment
-$app_env = strtolower(getenv('APP_ENV') ?: 'production');
-if (!$conn && ($app_env === 'local' || $app_env === 'development') && $db_host !== 'localhost' && $db_host !== '127.0.0.1') {
-    $conn = @mysqli_connect('localhost', 'root', '', 'student_ai_system', 3306);
-}
-
-if (!$conn) {
-    $connect_err = mysqli_connect_error();
-    error_log("EduNexAI Database Connection Error: " . $connect_err);
-
+try {
+    $conn = new EduNexMongoDriver($mongo_uri, $mongo_db);
+} catch (Exception $e) {
+    error_log("EduNexAI MongoDB Connection Error: " . $e->getMessage());
     $app_debug = strtolower(getenv('APP_DEBUG') ?: 'false');
     if ($app_debug === 'true' || $app_debug === '1') {
-        die("Database Connection Failed: " . htmlspecialchars($connect_err));
+        die("MongoDB Connection Failed: " . htmlspecialchars($e->getMessage()));
     } else {
         die("A database connection error occurred. Please contact the administrator.");
     }
 }
 
-mysqli_set_charset($conn, 'utf8mb4');
-?>
+// ============================================================
+// 6. Global Database Compatibility Functions
+// ============================================================
+
+if (!function_exists('db_query')) {
+    function db_query($connection, $query) {
+        if (is_object($connection) && method_exists($connection, 'query')) {
+            return $connection->query($query);
+        }
+        return false;
+    }
+}
+
+if (!function_exists('db_fetch_assoc')) {
+    function db_fetch_assoc($result) {
+        if (is_object($result) && method_exists($result, 'fetch_assoc')) {
+            return $result->fetch_assoc();
+        }
+        return null;
+    }
+}
+
+if (!function_exists('db_fetch_array')) {
+    function db_fetch_array($result, $mode = 3) {
+        if (is_object($result) && method_exists($result, 'fetch_array')) {
+            return $result->fetch_array($mode);
+        }
+        return null;
+    }
+}
+
+if (!function_exists('db_fetch_row')) {
+    function db_fetch_row($result) {
+        if (is_object($result) && method_exists($result, 'fetch_row')) {
+            return $result->fetch_row();
+        }
+        return null;
+    }
+}
+
+if (!function_exists('db_num_rows')) {
+    function db_num_rows($result) {
+        if (is_object($result)) {
+            if (isset($result->num_rows)) return $result->num_rows;
+            if (method_exists($result, 'count')) return $result->count();
+        }
+        return 0;
+    }
+}
+
+if (!function_exists('db_insert_id')) {
+    function db_insert_id($connection) {
+        if (is_object($connection)) {
+            if (isset($connection->insert_id)) return $connection->insert_id;
+            if (method_exists($connection, 'get_insert_id')) return $connection->get_insert_id();
+        }
+        return 0;
+    }
+}
+
+if (!function_exists('db_real_escape_string')) {
+    function db_real_escape_string($connection, $string) {
+        if (is_object($connection) && method_exists($connection, 'real_escape_string')) {
+            return $connection->real_escape_string($string);
+        }
+        return addslashes((string)$string);
+    }
+}
+
+if (!function_exists('db_error')) {
+    function db_error($connection) {
+        if (is_object($connection) && isset($connection->error)) {
+            return $connection->error;
+        }
+        return '';
+    }
+}
+
+if (!function_exists('db_prepare')) {
+    function db_prepare($connection, $query) {
+        if (is_object($connection) && method_exists($connection, 'prepare')) {
+            return $connection->prepare($query);
+        }
+        return false;
+    }
+}
+
+if (!function_exists('db_stmt_bind_param')) {
+    function db_stmt_bind_param($stmt, $types, &...$vars) {
+        if (is_object($stmt) && method_exists($stmt, 'bind_param')) {
+            return $stmt->bind_param($types, ...$vars);
+        }
+        return false;
+    }
+}
+
+if (!function_exists('db_stmt_execute')) {
+    function db_stmt_execute($stmt) {
+        if (is_object($stmt) && method_exists($stmt, 'execute')) {
+            return $stmt->execute();
+        }
+        return false;
+    }
+}
+
+if (!function_exists('db_stmt_get_result')) {
+    function db_stmt_get_result($stmt) {
+        if (is_object($stmt) && method_exists($stmt, 'get_result')) {
+            return $stmt->get_result();
+        }
+        return false;
+    }
+}
+
+if (!function_exists('db_stmt_close')) {
+    function db_stmt_close($stmt) {
+        if (is_object($stmt) && method_exists($stmt, 'close')) {
+            return $stmt->close();
+        }
+        return true;
+    }
+}
+
+if (!function_exists('db_data_seek')) {
+    function db_data_seek($result, $offset) {
+        if (is_object($result) && method_exists($result, 'data_seek')) {
+            return $result->data_seek($offset);
+        }
+        return false;
+    }
+}
+
+if (!function_exists('db_close')) {
+    function db_close($connection) {
+        return true;
+    }
+}
+
+// Fallback mysqli aliases if extension_loaded('mysqli') is false
+if (!function_exists('mysqli_query')) {
+    function mysqli_query($c, $q) { return db_query($c, $q); }
+    function mysqli_fetch_assoc($r) { return db_fetch_assoc($r); }
+    function mysqli_fetch_array($r, $m = 3) { return db_fetch_array($r, $m); }
+    function mysqli_fetch_row($r) { return db_fetch_row($r); }
+    function mysqli_num_rows($r) { return db_num_rows($r); }
+    function mysqli_insert_id($c) { return db_insert_id($c); }
+    function mysqli_real_escape_string($c, $s) { return db_real_escape_string($c, $s); }
+    function mysqli_error($c) { return db_error($c); }
+    function mysqli_prepare($c, $q) { return db_prepare($c, $q); }
+    function mysqli_stmt_bind_param($s, $t, &...$v) { return db_stmt_bind_param($s, $t, ...$v); }
+    function mysqli_stmt_execute($s) { return db_stmt_execute($s); }
+    function mysqli_stmt_get_result($s) { return db_stmt_get_result($s); }
+    function mysqli_stmt_close($s) { return db_stmt_close($s); }
+    function mysqli_data_seek($r, $o) { return db_data_seek($r, $o); }
+    function mysqli_close($c) { return db_close($c); }
+}

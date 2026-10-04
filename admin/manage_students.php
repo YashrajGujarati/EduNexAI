@@ -8,7 +8,7 @@ if(!isset($_SESSION['user_id']) || $_SESSION['role'] != "admin"){
 
 require_once(__DIR__ . '/../config/db.php');
 
-$search = isset($_GET['search']) ? mysqli_real_escape_string($conn, trim($_GET['search'])) : '';
+$search = isset($_GET['search']) ? db_real_escape_string($conn, trim($_GET['search'])) : '';
 $where = "";
 if(!empty($search)) {
     $where = " WHERE users.name LIKE '%$search%' OR students.class LIKE '%$search%' OR students.roll_number LIKE '%$search%'";
@@ -22,7 +22,7 @@ $where
 ORDER BY students.student_id ASC
 ";
 
-$result = mysqli_query($conn, $query);
+$result = db_query($conn, $query);
 $page_title = "Manage Students";
 ?>
 
@@ -69,7 +69,7 @@ $page_title = "Manage Students";
             <div class="card-header bg-white py-3 card-header-flex">
                 <div>
                     <h4 class="mb-0 fw-bold text-dark"><i class="fas fa-user-graduate text-primary me-2"></i>Student Records</h4>
-                    <small class="text-muted">Total Enrolled Students: <?php echo mysqli_num_rows($result); ?></small>
+                    <small class="text-muted">Total Enrolled Students: <?php echo db_num_rows($result); ?></small>
                 </div>
             </div>
 
@@ -87,8 +87,8 @@ $page_title = "Manage Students";
                             </tr>
                         </thead>
                         <tbody>
-                        <?php if(mysqli_num_rows($result) > 0) {
-                            while($row = mysqli_fetch_assoc($result)){ 
+                        <?php if(db_num_rows($result) > 0) {
+                            while($row = db_fetch_assoc($result)){ 
                                 $att = (float)$row['attendance'];
                                 $att_badge = $att >= 75 ? 'badge-pass' : 'badge-fail';
                         ?>
@@ -143,4 +143,4 @@ $page_title = "Manage Students";
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+</html>

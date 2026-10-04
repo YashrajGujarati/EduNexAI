@@ -21,7 +21,7 @@ INNER JOIN users
 ON students.user_id = users.id
 ";
 
-$result = mysqli_query($conn,$query);
+$result = db_query($conn,$query);
 
 ?>
 <!DOCTYPE html>
@@ -87,7 +87,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 
         <tbody>
 
-        <?php while($row=mysqli_fetch_assoc($result)){ ?>
+        <?php while($row=db_fetch_assoc($result)){ ?>
 
             <tr>
 

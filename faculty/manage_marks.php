@@ -31,13 +31,13 @@ if (isset($_POST['save_marks'])) {
         $total = $internal + $external;
 
         /* Check existing record */
-        $check = mysqli_query($conn, "SELECT mark_id FROM marks WHERE student_id = '$student_id' AND subject_id = '$sub_id'");
-        if (mysqli_num_rows($check) > 0) {
-            $m_row = mysqli_fetch_assoc($check);
+        $check = db_query($conn, "SELECT mark_id FROM marks WHERE student_id = '$student_id' AND subject_id = '$sub_id'");
+        if (db_num_rows($check) > 0) {
+            $m_row = db_fetch_assoc($check);
             $m_id = $m_row['mark_id'];
-            mysqli_query($conn, "UPDATE marks SET internal_marks = '$internal', external_marks = '$external', total_marks = '$total' WHERE mark_id = '$m_id'");
+            db_query($conn, "UPDATE marks SET internal_marks = '$internal', external_marks = '$external', total_marks = '$total' WHERE mark_id = '$m_id'");
         } else {
-            mysqli_query($conn, "INSERT INTO marks (student_id, subject_id, internal_marks, external_marks, total_marks) VALUES ('$student_id', '$sub_id', '$internal', '$external', '$total')");
+            db_query($conn, "INSERT INTO marks (student_id, subject_id, internal_marks, external_marks, total_marks) VALUES ('$student_id', '$sub_id', '$internal', '$external', '$total')");
         }
         $success_count++;
     }
@@ -47,12 +47,12 @@ if (isset($_POST['save_marks'])) {
 }
 
 /* Faculty Subjects */
-$subject_query = mysqli_query($conn, "SELECT subject_id, subject_name FROM subjects WHERE faculty_id = '$faculty_id' ORDER BY subject_name ASC");
+$subject_query = db_query($conn, "SELECT subject_id, subject_name FROM subjects WHERE faculty_id = '$faculty_id' ORDER BY subject_name ASC");
 
 /* Students for selected subject */
 $students = [];
 if ($selected_subject > 0) {
-    $stu_query = mysqli_query($conn, "
+    $stu_query = db_query($conn, "
         SELECT
             s.student_id,
             u.name,
@@ -67,7 +67,7 @@ if ($selected_subject > 0) {
         ORDER BY u.name ASC
     ");
     if ($stu_query) {
-        while ($row = mysqli_fetch_assoc($stu_query)) {
+        while ($row = db_fetch_assoc($stu_query)) {
             $students[] = $row;
         }
     }
@@ -105,7 +105,7 @@ $page_title = "Manage Marks";
                         <span class="input-group-text"><i class="fas fa-book-open text-primary"></i></span>
                         <select name="subject_id" class="form-select" onchange="this.form.submit()" required>
                             <option value="">-- Choose Course Subject --</option>
-                            <?php while ($sub = mysqli_fetch_assoc($subject_query)): ?>
+                            <?php while ($sub = db_fetch_assoc($subject_query)): ?>
                                 <option value="<?php echo $sub['subject_id']; ?>" <?php echo ($selected_subject == $sub['subject_id']) ? 'selected' : ''; ?>>
                                     <?php echo htmlspecialchars($sub['subject_name']); ?>
                                 </option>

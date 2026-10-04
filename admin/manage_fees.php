@@ -15,7 +15,7 @@ $message = "";
 $message_type = "";
 
 /* Auto-sync users with role 'student' into students table if missing */
-mysqli_query($conn, "
+db_query($conn, "
     INSERT IGNORE INTO students (user_id, class, roll_number) 
     SELECT id, 'BTech-CS', CONCAT('EN', LPAD(id, 4, '0')) 
     FROM users WHERE role = 'student' 
@@ -23,7 +23,7 @@ mysqli_query($conn, "
 ");
 
 /* Auto-initialize missing fee records for any students */
-mysqli_query($conn, "
+db_query($conn, "
     INSERT IGNORE INTO student_fees (student_id, total_fee, paid_fee, due_date, status) 
     SELECT student_id, 50000.00, 0.00, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY), 'pending' 
     FROM students 
@@ -43,21 +43,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_fee'])) {
         $message_type = "danger";
     } else {
         // Fetch current paid fee to re-evaluate status
-        $f_check = mysqli_query($conn, "SELECT paid_fee FROM student_fees WHERE fee_id = $fee_id LIMIT 1");
-        if ($f_check && mysqli_num_rows($f_check) > 0) {
-            $curr_paid = (float)mysqli_fetch_assoc($f_check)['paid_fee'];
+        $f_check = db_query($conn, "SELECT paid_fee FROM student_fees WHERE fee_id = $fee_id LIMIT 1");
+        if ($f_check && db_num_rows($f_check) > 0) {
+            $curr_paid = (float)db_fetch_assoc($f_check)['paid_fee'];
             $new_status = ($curr_paid >= $new_total_fee) ? 'paid' : (($curr_paid > 0) ? 'partial' : 'pending');
 
-            $stmt = mysqli_prepare($conn, "UPDATE student_fees SET total_fee = ?, due_date = ?, status = ? WHERE fee_id = ?");
-            mysqli_stmt_bind_param($stmt, "dssi", $new_total_fee, $new_due_date, $new_status, $fee_id);
-            if (mysqli_stmt_execute($stmt)) {
+            $stmt = db_prepare($conn, "UPDATE student_fees SET total_fee = ?, due_date = ?, status = ? WHERE fee_id = ?");
+            db_stmt_bind_param($stmt, "dssi", $new_total_fee, $new_due_date, $new_status, $fee_id);
+            if (db_stmt_execute($stmt)) {
                 $message = "Student fee structure updated successfully!";
                 $message_type = "success";
             } else {
-                $message = "Failed to update fee: " . mysqli_error($conn);
+                $message = "Failed to update fee: " . db_error($conn);
                 $message_type = "danger";
             }
-            mysqli_stmt_close($stmt);
+            db_stmt_close($stmt);
         }
     }
 }
@@ -69,12 +69,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['record_manual_payment
     $fee_id = (int)$_POST['fee_id'];
     $student_id = (int)$_POST['student_id'];
     $amount_paid = (float)$_POST['amount_paid'];
-    $payment_method = trim(mysqli_real_escape_string($conn, $_POST['payment_method']));
+    $payment_method = trim(db_real_escape_string($conn, $_POST['payment_method']));
 
     // Get current fee status
-    $f_query = mysqli_query($conn, "SELECT total_fee, paid_fee FROM student_fees WHERE fee_id = $fee_id LIMIT 1");
-    if ($f_query && mysqli_num_rows($f_query) > 0) {
-        $f_data = mysqli_fetch_assoc($f_query);
+    $f_query = db_query($conn, "SELECT total_fee, paid_fee FROM student_fees WHERE fee_id = $fee_id LIMIT 1");
+    if ($f_query && db_num_rows($f_query) > 0) {
+        $f_data = db_fetch_assoc($f_query);
         $total_fee = (float)$f_data['total_fee'];
         $paid_fee = (float)$f_data['paid_fee'];
         $remaining = max(0, $total_fee - $paid_fee);
@@ -89,25 +89,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['record_manual_payment
             $txn_id = "ADM" . date('Ymd') . rand(10000, 99999);
             $receipt_no = "RCPT-ADM" . date('Ym') . rand(1000, 9999);
 
-            $stmt = mysqli_prepare($conn, "INSERT INTO fee_payments (fee_id, student_id, amount_paid, payment_method, transaction_id, receipt_no, payment_status) VALUES (?, ?, ?, ?, ?, ?, 'success')");
-            mysqli_stmt_bind_param($stmt, "iidsss", $fee_id, $student_id, $amount_paid, $payment_method, $txn_id, $receipt_no);
+            $stmt = db_prepare($conn, "INSERT INTO fee_payments (fee_id, student_id, amount_paid, payment_method, transaction_id, receipt_no, payment_status) VALUES (?, ?, ?, ?, ?, ?, 'success')");
+            db_stmt_bind_param($stmt, "iidsss", $fee_id, $student_id, $amount_paid, $payment_method, $txn_id, $receipt_no);
 
-            if (mysqli_stmt_execute($stmt)) {
+            if (db_stmt_execute($stmt)) {
                 $new_paid = $paid_fee + $amount_paid;
                 $new_status = ($new_paid >= $total_fee) ? 'paid' : (($new_paid > 0) ? 'partial' : 'pending');
 
-                $upd = mysqli_prepare($conn, "UPDATE student_fees SET paid_fee = ?, status = ? WHERE fee_id = ?");
-                mysqli_stmt_bind_param($upd, "dsi", $new_paid, $new_status, $fee_id);
-                mysqli_stmt_execute($upd);
-                mysqli_stmt_close($upd);
+                $upd = db_prepare($conn, "UPDATE student_fees SET paid_fee = ?, status = ? WHERE fee_id = ?");
+                db_stmt_bind_param($upd, "dsi", $new_paid, $new_status, $fee_id);
+                db_stmt_execute($upd);
+                db_stmt_close($upd);
 
                 $message = "Manual payment of ₹" . number_format($amount_paid, 2) . " recorded successfully! Receipt #" . $receipt_no;
                 $message_type = "success";
             } else {
-                $message = "Error saving manual payment: " . mysqli_error($conn);
+                $message = "Error saving manual payment: " . db_error($conn);
                 $message_type = "danger";
             }
-            mysqli_stmt_close($stmt);
+            db_stmt_close($stmt);
         }
     }
 }
@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['record_manual_payment
 /* =========================================================
    COMPUTE FINANCIAL OVERVIEW STATISTICS
 ========================================================= */
-$stats_q = mysqli_query($conn, "
+$stats_q = db_query($conn, "
     SELECT 
         COUNT(*) AS total_students,
         SUM(total_fee) AS total_expected,
@@ -125,7 +125,7 @@ $stats_q = mysqli_query($conn, "
         SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending_count
     FROM student_fees
 ");
-$stats = mysqli_fetch_assoc($stats_q);
+$stats = db_fetch_assoc($stats_q);
 
 $total_students_count = (int)($stats['total_students'] ?? 0);
 $total_expected = (float)($stats['total_expected'] ?? 0);
@@ -142,7 +142,7 @@ $students_with_pending_fees = $partial_students_count + $unpaid_students_count;
    FETCH STUDENT FEES LIST WITH FILTERS & SEARCH
 ========================================================= */
 $filter_status = isset($_GET['status']) ? trim($_GET['status']) : 'all';
-$search = isset($_GET['search']) ? trim(mysqli_real_escape_string($conn, $_GET['search'])) : '';
+$search = isset($_GET['search']) ? trim(db_real_escape_string($conn, $_GET['search'])) : '';
 
 $where_clauses = [];
 if ($filter_status === 'paid') {
@@ -178,7 +178,7 @@ $list_sql = "
     $where_sql
     ORDER BY remaining_fee DESC, u.name ASC
 ";
-$fees_list_res = mysqli_query($conn, $list_sql);
+$fees_list_res = db_query($conn, $list_sql);
 
 $page_title = "Fee Status Management";
 ?>
@@ -334,7 +334,7 @@ $page_title = "Fee Status Management";
             <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-user-graduate text-info me-2"></i>Student Fee Payment Records</h5>
                 <span class="badge bg-secondary rounded-pill px-3 py-2">
-                    Showing: <?php echo mysqli_num_rows($fees_list_res); ?> Students
+                    Showing: <?php echo db_num_rows($fees_list_res); ?> Students
                 </span>
             </div>
             <div class="card-body p-0">
@@ -353,14 +353,14 @@ $page_title = "Fee Status Management";
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if (mysqli_num_rows($fees_list_res) == 0): ?>
+                            <?php if (db_num_rows($fees_list_res) == 0): ?>
                                 <tr>
                                     <td colspan="8" class="text-center py-5 text-muted">
                                         <i class="fas fa-folder-open fs-2 d-block mb-2"></i> No student fee records match your search query.
                                     </td>
                                 </tr>
                             <?php else: ?>
-                                <?php while ($row = mysqli_fetch_assoc($fees_list_res)): ?>
+                                <?php while ($row = db_fetch_assoc($fees_list_res)): ?>
                                     <?php 
                                         $tot = (float)$row['total_fee'];
                                         $pd = (float)$row['paid_fee'];
@@ -370,9 +370,9 @@ $page_title = "Fee Status Management";
 
                                         // Fetch recent payments for this student
                                         $stu_id = (int)$row['student_id'];
-                                        $p_history_q = mysqli_query($conn, "SELECT * FROM fee_payments WHERE student_id = $stu_id ORDER BY payment_date DESC");
+                                        $p_history_q = db_query($conn, "SELECT * FROM fee_payments WHERE student_id = $stu_id ORDER BY payment_date DESC");
                                         $p_logs = [];
-                                        while ($pl = mysqli_fetch_assoc($p_history_q)) {
+                                        while ($pl = db_fetch_assoc($p_history_q)) {
                                             $p_logs[] = $pl;
                                         }
                                     ?>

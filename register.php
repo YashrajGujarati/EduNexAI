@@ -11,11 +11,11 @@ $success_msg = "";
 
 if(isset($_POST['register']))
 {
-    $name = mysqli_real_escape_string($conn, $_POST['name']);
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $name = db_real_escape_string($conn, $_POST['name']);
+    $email = db_real_escape_string($conn, $_POST['email']);
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
-    $role = mysqli_real_escape_string($conn, $_POST['role'] ?? 'student');
+    $role = db_real_escape_string($conn, $_POST['role'] ?? 'student');
 
     if(!in_array($role, ['student', 'faculty'])) {
         $role = 'student';
@@ -32,8 +32,8 @@ if(isset($_POST['register']))
     else
     {
         $check_email = "SELECT * FROM users WHERE email='$email'";
-        $result = mysqli_query($conn, $check_email);
-        if(mysqli_num_rows($result) > 0)
+        $result = db_query($conn, $check_email);
+        if(db_num_rows($result) > 0)
         {
             $error_msg = "An account with this email address already exists.";
         }
@@ -42,16 +42,16 @@ if(isset($_POST['register']))
             $hash_password = password_hash($password, PASSWORD_DEFAULT);
             $insert = "INSERT INTO users(name, email, password, role)
                        VALUES('$name', '$email', '$hash_password', '$role')";
-            if(mysqli_query($conn, $insert))
+            if(db_query($conn, $insert))
             {
-                $new_user_id = mysqli_insert_id($conn);
+                $new_user_id = db_insert_id($conn);
                 if ($role === 'student') {
                     $enroll_no = "EN" . str_pad($new_user_id, 4, "0", STR_PAD_LEFT);
-                    @mysqli_query($conn, "UPDATE users SET enrollment_no='$enroll_no' WHERE id=$new_user_id");
-                    @mysqli_query($conn, "INSERT INTO students (user_id, class, roll_number, attendance) VALUES ($new_user_id, 'BTech-CS', '$enroll_no', 80.00)");
-                    $new_stu_id = mysqli_insert_id($conn);
+                    @db_query($conn, "UPDATE users SET enrollment_no='$enroll_no' WHERE id=$new_user_id");
+                    @db_query($conn, "INSERT INTO students (user_id, class, roll_number, attendance) VALUES ($new_user_id, 'BTech-CS', '$enroll_no', 80.00)");
+                    $new_stu_id = db_insert_id($conn);
                     if ($new_stu_id > 0) {
-                        @mysqli_query($conn, "INSERT INTO student_fees (student_id, total_fee, paid_fee, due_date, status) VALUES ($new_stu_id, 50000.00, 0.00, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY), 'pending')");
+                        @db_query($conn, "INSERT INTO student_fees (student_id, total_fee, paid_fee, due_date, status) VALUES ($new_stu_id, 50000.00, 0.00, DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY), 'pending')");
                     }
                 }
                 $_SESSION['register_success'] = "Registration Successful! Please login to your account.";
@@ -60,7 +60,7 @@ if(isset($_POST['register']))
             }
             else
             {
-                $error_msg = "Database Error: " . mysqli_error($conn);
+                $error_msg = "Database Error: " . db_error($conn);
             }
         }
     }
@@ -280,4 +280,4 @@ if(isset($_POST['register']))
 </body>
 </html>
 
-
+

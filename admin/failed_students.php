@@ -26,7 +26,7 @@ HAVING total_marks < 70
 ORDER BY total_marks ASC
 ";
 
-$result = mysqli_query($conn,$query);
+$result = db_query($conn,$query);
 
 ?>
 <!DOCTYPE html>
@@ -112,7 +112,7 @@ $result = mysqli_query($conn,$query);
 
                         <tbody>
 
-                        <?php while($row = mysqli_fetch_assoc($result)){ ?>
+                        <?php while($row = db_fetch_assoc($result)){ ?>
 
                             <tr>
 

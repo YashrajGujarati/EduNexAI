@@ -16,8 +16,8 @@ $message = "";
 $message_type = "";
 
 // Fetch user email for display
-$user_q = mysqli_query($conn, "SELECT email, password FROM users WHERE id = $user_id LIMIT 1");
-$user_data = mysqli_fetch_assoc($user_q);
+$user_q = db_query($conn, "SELECT email, password FROM users WHERE id = $user_id LIMIT 1");
+$user_data = db_fetch_assoc($user_q);
 $current_hashed_password = $user_data['password'] ?? '';
 $user_email = $user_data['email'] ?? '';
 
@@ -53,19 +53,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
         // Hash new password securely
         $new_hash = password_hash($new_password, PASSWORD_DEFAULT);
 
-        $stmt = mysqli_prepare($conn, "UPDATE users SET password = ?, first_login = 0 WHERE id = ?");
-        mysqli_stmt_bind_param($stmt, "si", $new_hash, $user_id);
+        $stmt = db_prepare($conn, "UPDATE users SET password = ?, first_login = 0 WHERE id = ?");
+        db_stmt_bind_param($stmt, "si", $new_hash, $user_id);
 
-        if (mysqli_stmt_execute($stmt)) {
+        if (db_stmt_execute($stmt)) {
             $message = "Your password has been successfully updated! Redirecting to dashboard...";
             $message_type = "success";
             $current_hashed_password = $new_hash;
             echo "<script>setTimeout(function(){ window.location='dashboard.php'; }, 2000);</script>";
         } else {
-            $message = "Failed to update password. Error: " . mysqli_error($conn);
+            $message = "Failed to update password. Error: " . db_error($conn);
             $message_type = "danger";
         }
-        mysqli_stmt_close($stmt);
+        db_stmt_close($stmt);
     }
 }
 

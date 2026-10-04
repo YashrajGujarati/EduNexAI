@@ -26,9 +26,9 @@ ON students.user_id = users.id
 ORDER BY students.student_id ASC
 ";
 
-$result = mysqli_query($conn, $query);
+$result = db_query($conn, $query);
 
-while($row = mysqli_fetch_assoc($result))
+while($row = db_fetch_assoc($result))
 {
     echo
     $row['student_id']."\t".
