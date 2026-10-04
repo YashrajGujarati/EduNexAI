@@ -1,18 +1,23 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
+  "trailingSlash": false,
   "routes": [
     {
-      "src": "^/login(?:\\.php)?/?$",
+      "src": "^/css/(.*)",
+      "dest": "/css/$1"
+    },
+    {
+      "src": "^/js/(.*)",
+      "dest": "/js/$1"
+    },
+    {
+      "src": "^/login/?$",
       "dest": "/login.html"
     },
     {
-      "src": "^/register(?:\\.php)?/?$",
+      "src": "^/register/?$",
       "dest": "/login.html"
-    },
-    {
-      "src": "^/(css|js)/(.*)",
-      "dest": "/$1/$2"
     },
     {
       "src": "^/$",
@@ -20,7 +25,7 @@
     },
     {
       "src": "^/(.*)",
-      "dest": "/$1"
+      "dest": "/index.html"
     }
   ]
 }
