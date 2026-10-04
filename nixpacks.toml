@@ -1,9 +1,8 @@
-# Nixpacks configuration for Railway when deployed without Docker
+# Nixpacks configuration for Railway (fallback when not using Docker)
 [phases.setup]
 nixPkgs = [
   "php82",
-  "php82Extensions.mysqli",
-  "php82Extensions.pdo_mysql",
+  "php82Extensions.mongodb",
   "php82Extensions.gd",
   "php82Extensions.zip",
   "python311",
@@ -12,7 +11,7 @@ nixPkgs = [
 
 [phases.install]
 cmds = [
-  "pip install pandas scikit-learn mysql-connector-python seaborn matplotlib --break-system-packages"
+  "pip install pandas scikit-learn pymongo seaborn matplotlib --break-system-packages"
 ]
 
 [start]

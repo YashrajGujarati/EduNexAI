@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# Install system dependencies and Python environment
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
@@ -9,26 +9,33 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libfreetype6-dev \
     libzip-dev \
+    libssl-dev \
+    pkg-config \
     zip \
     unzip \
     git \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Symlink python3 to python so PHP `shell_exec('python ...')` works seamlessly
+# Symlink python3 → python so PHP shell_exec('python ...') works
 RUN ln -sf /usr/bin/python3 /usr/bin/python
 
-# Configure and install PHP extensions
+# Configure and install PHP extensions (mysqli, pdo_mysql, gd, zip)
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install mysqli pdo pdo_mysql gd zip
+
+# Install PHP mongodb PECL extension (required for MongoDB\Driver\Manager)
+RUN pecl install mongodb \
+    && docker-php-ext-enable mongodb
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Install Python packages globally or via pip --break-system-packages
+# Install Python packages (pymongo for MongoDB, analytics libs)
 RUN pip3 install --no-cache-dir --break-system-packages \
     pandas \
     scikit-learn \
-    mysql-connector-python \
+    pymongo \
     seaborn \
     matplotlib
 
@@ -41,15 +48,15 @@ WORKDIR /var/www/html
 # Copy application files
 COPY . /var/www/html/
 
-# Run composer install if composer.json is present
+# Run composer install
 RUN if [ -f "composer.json" ]; then composer install --no-dev --optimize-autoloader; fi
 
-# Create output and upload directories with write permissions
+# Create writable output and upload directories
 RUN mkdir -p /var/www/html/python/output /var/www/html/uploads/assignments /var/www/html/uploads/submissions \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/python/output /var/www/html/uploads
 
-# Copy and setup entrypoint script for Railway PORT binding
+# Copy and set up entrypoint script for Railway PORT binding
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
