@@ -1,20 +1,33 @@
-# Ignore all backend PHP files, scripts, and server infrastructure from Vercel static deployment
+# Vercel static deployment — only index.html, login.html, css/, js/ are served
+# All backend PHP, Python, and server files are excluded
+
+# PHP backend files
 *.php
 admin/
 faculty/
 student/
 config/
 database/
+includes/
+
+# Python analytics (server-side only)
 python/
+
+# Dependencies and build tools
 vendor/
 fpdf/
-Dockerfile
-docker-entrypoint.sh
-railway.json
-nixpacks.toml
 composer.json
 composer.lock
 package.json
-.env*
+node_modules/
+
+# Environment & secrets
+.env
+.env.*
+
+# Database files
 *.sql
+*.json.bak
+
+# Docs and server config
 *.md
