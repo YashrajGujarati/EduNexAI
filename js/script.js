@@ -45,10 +45,10 @@ document.addEventListener('click', function (e) {
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const hasBackend = window.EDUNEX_CONFIG && window.EDUNEX_CONFIG.BACKEND_URL;
 
-    // On Vercel without BACKEND_URL, intercept the link to prevent file download
+    // On Vercel without BACKEND_URL, redirect to login.html to show connection portal
     if (!isLocalhost && !hasBackend && href.includes('.php')) {
         e.preventDefault();
-        alert('EduNexAI Backend URL is not configured yet.\n\nPlease configure BACKEND_URL in js/config.js with your Railway deployment URL.');
+        window.location.href = 'login.html';
         return false;
     }
 });
