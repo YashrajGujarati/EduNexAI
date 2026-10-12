@@ -26,9 +26,10 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && pecl install mongodb \
     && docker-php-ext-enable mongodb
 
-# PHP's Apache image requires the prefork MPM. Disable other MPM modules so
-# Apache does not fail when a base image or platform enables one by default.
-RUN a2dismod mpm_event mpm_worker 2>/dev/null || true \
+# PHP's Apache image requires the prefork MPM. Remove every enabled MPM link
+# first because Apache refuses to start when more than one MPM is loaded.
+RUN rm -f /etc/apache2/mods-enabled/mpm_*.load \
+          /etc/apache2/mods-enabled/mpm_*.conf \
     && a2enmod mpm_prefork rewrite
 
 # Install Python packages required by the analytics scripts
