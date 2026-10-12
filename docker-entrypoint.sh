@@ -10,6 +10,11 @@ PORT="${PORT:-80}"
 
 echo "Starting EduNexAI Backend on port ${PORT}..."
 
+# Keep only Apache's prefork MPM, which is required by PHP's Apache image.
+# Remove enabled module links at runtime as well as during the image build.
+find /etc/apache2/mods-enabled -maxdepth 1 \( -name 'mpm_*.load' -o -name 'mpm_*.conf' \) -delete
+a2enmod mpm_prefork >/dev/null
+
 # Update Apache port binding dynamically to listen on Railway's $PORT
 sed -i "s/Listen 80/Listen ${PORT}/g" /etc/apache2/ports.conf
 sed -i "s/<VirtualHost \*:80>/<VirtualHost *:${PORT}>/g" /etc/apache2/sites-available/000-default.conf
