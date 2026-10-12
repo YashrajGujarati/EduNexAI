@@ -9,4 +9,4 @@
  *
  * This file IS committed to git. Do NOT put secrets here — only the public backend URL.
  */
-window.__EDUNEX_BACKEND_URL__ = '__RAILWAY_URL__';
+window.__EDUNEX_BACKEND_URL__ = 'https://edunexai-production.up.railway.app';
