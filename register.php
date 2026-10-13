@@ -1,7 +1,9 @@
 <?php
 require_once(__DIR__ . '/config/cors.php');
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
 }
 require_once(__DIR__ . '/config/db.php');
 $frontend_url = getenv('FRONTEND_URL') ?: 'index.html';
@@ -279,5 +281,4 @@ if(isset($_POST['register']))
 <script src="js/register.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>
-
 

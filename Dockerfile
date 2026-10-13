@@ -26,6 +26,10 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && pecl install mongodb \
     && docker-php-ext-enable mongodb
 
+# Buffer PHP output so UTF-8 BOMs or incidental whitespace cannot prevent
+# sessions and redirects from sending HTTP headers.
+RUN printf "output_buffering=4096\n" > /usr/local/etc/php/conf.d/zz-output-buffering.ini
+
 # PHP's Apache image requires the prefork MPM. Remove every enabled MPM link
 # first because Apache refuses to start when more than one MPM is loaded.
 RUN rm -f /etc/apache2/mods-enabled/mpm_*.load \
